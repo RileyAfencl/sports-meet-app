@@ -1,4 +1,4 @@
-# Core Design Guidelines
+## Core Design Guidelines
 
 1. Facilitate real-world activity discovery, coordination, and meet-ups. 
 2. Prioritize user safety, and control. 
@@ -8,15 +8,9 @@
 6. Collect the absolute minimum amount of personal information necessary for the app to function. We will sell no data of any kind. 
 7. V1's deployment purpose is specifically to gauge the viability of the platform in market. 
 
-# Core Features
+## Location Specifics
 
-1. Users create a Bio. Bios consist of the users selected profile picture, the activity tags the user chooses, visibility preferences (Male/Female/Any), Age, and preferred activity times. (These tags may be changed at anytime, and activity-time can be manually filtered)
-
-
-
-# Location Specifics
-
-## User Location
+### User Location
 Each user maintains a primary location associated with their profile.
 
 The purpose of the user location is discovery.
@@ -29,7 +23,7 @@ Adjust their search radius during discovery
 
 User discovery will utilize this location and radius to find nearby users that match the selected filters.
 
-## Favorite Locations
+### Favorite Locations
 Users may optionally save frequently used locations.
 
 Examples:
@@ -43,7 +37,7 @@ The purpose of favorite locations is convenience during activity creation.
 
 Favorite locations are not used for user discovery or matching.
 
-## Activity Locations
+### Activity Locations
 Activity Location
 
 Each activity posting contains a specific location.
@@ -57,3 +51,53 @@ Select a location on a map/pin interface
 The purpose of activity locations is to communicate where the activity will occur.
 
 Activity locations are not used as a primary user discovery mechanism in V1.
+
+## Gender Preference, Visibility, and Messaging Rules
+
+V1 will use gender preference settings as a global account-level control for user discovery and direct messaging.
+
+### Profile Settings
+
+During account creation, users select:
+
+- Gender: Male or Female
+- Seeking: Men, Women, or Everyone
+
+These settings may be updated later in account settings.
+
+### User Discovery
+
+User discovery is preference-gated.
+
+A user should only appear in another user's discovery results when both users' gender and seeking preferences are mutually compatible.
+
+Examples:
+
+- A woman seeking women will not see male profiles in user discovery.
+- A woman seeking women will not appear in male user discovery.
+- A man seeking everyone will only see women whose preferences allow male discovery.
+- A man seeking men will only see compatible male profiles.
+
+### Direct Messaging
+
+Direct messaging follows the same mutual compatibility rule as user discovery.
+
+A user may only directly message another user when both users' gender and seeking preferences allow that connection.
+
+Joining the same activity does not automatically grant direct message access.
+
+### Activity Posts
+
+Activity posts have their own visibility setting:
+
+- Men
+- Women
+- Everyone
+
+If an activity is marked Everyone, users who can view the activity may RSVP and optionally participate in the temporary activity chat.
+
+Activity chat participation is considered separate from direct messaging. Users who join an activity chat may communicate within that temporary activity context, but private direct messaging remains controlled by global gender preference rules.
+
+### Safety Principle
+
+The purpose of these rules is to reduce unwanted direct contact and give users control over who can discover and message them. A main goal of this app is to give users the ability and tools to protect themselves. 
