@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { router } from 'expo-router';
 
 export default function LoginScreen() {
   return (
@@ -38,7 +39,8 @@ export default function LoginScreen() {
           Don't Have An Account?
         </ThemedText>
 
-        <Pressable style={styles.createAccountButton}>
+        <Pressable style={styles.createAccountButton}
+                    onPress={() => router.push('/register')}>
           <ThemedText style={styles.createAccountButtonText}>
             Sign Up Here!
           </ThemedText>
