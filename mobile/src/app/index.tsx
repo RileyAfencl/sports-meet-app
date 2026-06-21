@@ -1,61 +1,48 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Spacing } from '@/constants/theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
-
-export default function HomeScreen() {
+export default function LoginScreen() {
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+            Welcome to Squad Up
           </ThemedText>
+
+          <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#888"
+          />
+
+          <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#888"
+          secureTextEntry
+          />
+
+          <Pressable style={styles.signInButton}>
+            <ThemedText style={styles.signInButtonText}>
+              Sign In
+            </ThemedText>
+          </Pressable>
         </ThemedView>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
+        <ThemedText style={styles.createAccountPrompt}>
+          Don't Have An Account?
         </ThemedText>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
+        <Pressable style={styles.createAccountButton}>
+          <ThemedText style={styles.createAccountButtonText}>
+            Sign Up Here!
+          </ThemedText>
+        </Pressable>
       </SafeAreaView>
     </ThemedView>
   );
@@ -67,13 +54,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
+  signInButton: {
+  alignSelf: 'center',
+  borderWidth: 1,
+  borderColor: '#fff',
+  borderRadius: 8,
+  paddingHorizontal: 32,
+  paddingVertical: 12,
+  marginTop: Spacing.two,
+  },
+  signInButtonText: {
+    textAlign: 'center',
+    fontWeight: '700',
+  },
   safeArea: {
     flex: 1,
     paddingHorizontal: Spacing.four,
     alignItems: 'center',
     gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    paddingBottom: Spacing.three,
   },
   heroSection: {
     alignItems: 'center',
@@ -82,17 +81,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     gap: Spacing.four,
   },
+  input: {
+  borderWidth: 1,
+  borderColor: '#555',
+  borderRadius: 8,
+  paddingHorizontal: 14,
+  paddingVertical: 12,
+  fontSize: 16,
+  color: '#fff',
+  alignSelf: 'stretch',
+  },
   title: {
     textAlign: 'center',
   },
-  code: {
-    textTransform: 'uppercase',
+  createAccountPrompt: {
+  textAlign: 'center',
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  createAccountButton: {
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 8,
+    paddingHorizontal: 28,
+    paddingVertical: 10,
+    marginBottom: 200,
+  },
+  createAccountButtonText: {
+    fontWeight: '700',
   },
 });
