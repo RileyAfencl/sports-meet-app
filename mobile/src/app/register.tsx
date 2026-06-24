@@ -31,7 +31,8 @@ export default function RegisterScreen() {
             secureTextEntry
         />
 
-        <Pressable style={styles.createAccountButton}>
+        <Pressable style={styles.createAccountButton}
+                   onPress={() => router.push('/profile-create')}>
             <ThemedText style={styles.createAccountButtonText}>
                 Create Account
             </ThemedText>
