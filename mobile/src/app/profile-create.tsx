@@ -1,25 +1,13 @@
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { activityOptions } from '@/constants/activity-options';
+import { Spacing } from '@/constants/theme';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
 
-const activityOptions = [
-  'Lifting',
-  'Hiking',
-  'Basketball',
-  'Bowling',
-  'Soccer',
-  'Pickleball',
-  'Fishing',
-  'Running',
-  'Biking',
-  'Golf',
-  'Tennis',
-  'Disc Golf',
-];
 
 export default function ProfileCreateScreen() {
   const [activitySearch, setActivitySearch] = useState('');
@@ -163,7 +151,8 @@ export default function ProfileCreateScreen() {
           {aboutMe.length} / 300 characters
         </ThemedText>
 
-        <Pressable style={styles.continueButton}>
+        <Pressable style={styles.continueButton}
+                   onPress={() => router.push('/home')}>
           <ThemedText style={styles.continueButtonText}>
             Continue
           </ThemedText>

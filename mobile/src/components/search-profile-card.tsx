@@ -1,0 +1,67 @@
+import { Pressable, StyleSheet } from 'react-native';
+
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { Spacing } from '@/constants/theme';
+
+type SearchProfileCardProps = {
+  profile: {
+    id: string;
+    firstName: string;
+    lastInitial: string;
+    age: number;
+    photoUrl?: string;
+  };
+  onPress: () => void;
+};
+
+export function SearchProfileCard({ profile, onPress }: SearchProfileCardProps) {
+  return (
+    <Pressable style={styles.card} onPress={onPress}>
+      <ThemedView style={styles.photoPlaceholder}>
+        <ThemedText style={styles.photoText}>Photo</ThemedText>
+      </ThemedView>
+
+      <ThemedText style={styles.nameText}>
+        {profile.firstName} {profile.lastInitial}.
+      </ThemedText>
+
+      <ThemedText style={styles.ageText}>
+        {profile.age}
+      </ThemedText>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    width: 130,
+    borderWidth: 1,
+    borderColor: '#555',
+    borderRadius: 12,
+    padding: Spacing.two,
+    alignItems: 'center',
+    gap: Spacing.one,
+  },
+  photoPlaceholder: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    borderWidth: 1,
+    borderColor: '#555',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  photoText: {
+    fontSize: 12,
+    opacity: 0.7,
+  },
+  nameText: {
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  ageText: {
+    fontSize: 13,
+    opacity: 0.8,
+  },
+});
