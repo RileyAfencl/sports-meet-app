@@ -101,3 +101,34 @@ Activity chat participation is considered separate from direct messaging. Users 
 ### Safety Principle
 
 The purpose of these rules is to reduce unwanted direct contact and give users control over who can discover and message them. A main goal of this app is to give users the ability and tools to protect themselves. 
+
+### Discovery Architechture
+
+DiscoveryScreen
+│
+├── Filters
+│
+├── Search Button
+│
+├── ActivitySection
+│     │
+│     ├── ProfileCard
+│     ├── ProfileCard
+│     └── ProfileCard
+│
+└── ProfileModal
+      │
+      ├── Picture
+      ├── About Me
+      ├── Activities
+      ├── Preferred Times
+      ├── Distance
+      ├── Message
+      ├── Report (...)
+      └── Close
+
+Search results is categorized and searchProfileCards are grouped undearneath their respective activity. 
+
+searchProfileCards are simple the user picture, First/Last Age, and that card is clickable and brings up searchProfileModal. 
+
+searchProfileModal contains all user profile information, a message button, a close button, and an x in the top right. It does not navigate to a new page, or change anything in the current discovery page so the user may return back to discovery upon review. If a user elects to message that user, it will reroute them to a new DM between them and that user, their searchProfileModal will also be available in the DM screen. 
