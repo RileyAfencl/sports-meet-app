@@ -1,5 +1,7 @@
 import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 
+import { SearchProfileCard } from '@/components/search-profile-card';
+import { SearchProfileModal } from '@/components/search-profile-modal';
 import { Sidebar } from '@/components/sidebar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -14,6 +16,42 @@ const timeOptions = [
     'Afternoon',
     'Evening',   
 ]
+
+const mockProfiles = [
+  {
+    id: '1',
+    firstName: 'John',
+    lastInitial: 'F',
+    age: 27,
+    activities: [ 'Lifting',
+                  'Running',
+                  'Pickleball',
+                  'Hiking',
+                  'Basketball',
+                  'Swimming',
+                  'Golf',
+                ],
+    preferredTimes: ['Morning', 'Evening'],
+    distanceMiles: 2.3,
+    aboutMe:
+      'I am looking for consistent activity partners who are reliable, easygoing, and interested in getting outside or training a few times a week. I usually prefer weekday evenings and weekends, and I am open to both casual sessions and more structured workouts depending on the activity. xxxxxxxxxxxxxxx',
+    matchCount: 2,
+  },
+  {
+    id: '2',
+    firstName: 'Sarah',
+    lastInitial: 'M',
+    age: 24,
+    activities: ['Pickleball', 'Hiking'],
+  },
+  {
+    id: '3',
+    firstName: 'Alex',
+    lastInitial: 'T',
+    age: 31,
+    activities: ['Lifting', 'Basketball'],
+  },
+];
 
 export default function HomeScreen() {
     const [activitySearch, setActivitySearch] = useState('');
@@ -56,6 +94,24 @@ export default function HomeScreen() {
       setHasSearched(true);
     };
     
+    const profilesWithMatchCounts = mockProfiles.map((profile) => {
+      const matchCount = profile.activities.filter((activity) =>
+        selectedActivities.includes(activity)
+      ).length;
+
+      return {
+        ...profile,
+        matchCount,
+      };
+    });
+
+    const sortedProfiles = profilesWithMatchCounts
+      .filter((profile) => profile.matchCount > 0)
+      .sort((a, b) => b.matchCount - a.matchCount);
+
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  
+
   return (
 <ThemedView style={styles.appShell}>
  
@@ -76,7 +132,7 @@ export default function HomeScreen() {
         <ThemedText style={styles.sectionLabel}>Activity Filters:</ThemedText>
 
         <TextInput
-        style={styles.input}
+      style={styles.input}
         placeholder="Search activities to filter for!"
         placeholderTextColor="#888"
         value={activitySearch}
@@ -140,76 +196,76 @@ export default function HomeScreen() {
     </ThemedView>
 
     <ThemedView style={styles.sectionHeader}>
-  <ThemedText style={styles.sectionLabel}>Time Filters</ThemedText>
+      <ThemedText style={styles.sectionLabel}>Time Filters</ThemedText>
 
-  <Pressable
-    style={[
-      styles.profileActivityButton,
-      useProfileTimePreferences && styles.profileActivityButtonActive,
-    ]}
-    onPress={() => {
-        const newValue = !useProfileTimePreferences;
+      <Pressable
+        style={[
+          styles.profileActivityButton,
+          useProfileTimePreferences && styles.profileActivityButtonActive,
+        ]}
+        onPress={() => {
+            const newValue = !useProfileTimePreferences;
 
-        setUseProfileTimePreferences(newValue);
+            setUseProfileTimePreferences(newValue);
 
-        if (newValue) {
-            setSelectedTimes([]);
-        }
-    }}
-  >
-    <ThemedText style={styles.profileActivityButtonText}>
-      Use Profile Times
-    </ThemedText>
-   </Pressable>
-   </ThemedView>
+            if (newValue) {
+                setSelectedTimes([]);
+            }
+        }}
+      >
+        <ThemedText style={styles.profileActivityButtonText}>
+          Use Profile Times
+        </ThemedText>
+      </Pressable>
+      </ThemedView>
 
-    <ThemedView style={styles.optionRow}>
-        <Pressable
-            disabled={useProfileTimePreferences}
-            style={[
-                styles.optionButton,
-                useProfileTimePreferences && styles.buttonDisabled,
-                selectedTimes.length === 0 &&
-                !useProfileTimePreferences &&
-                styles.optionButtonActive,
-            ]}
-            onPress={() => {
-            setUseProfileTimePreferences(false);
-            setSelectedTimes([]);
-            }}
-        >
-            <ThemedText>Any</ThemedText>
-        </Pressable>
-
-        {timeOptions.map((time) => (
+        <ThemedView style={styles.optionRow}>
             <Pressable
-            disabled={useProfileTimePreferences}
-            key={time}
-            style={[
-                styles.optionButton,
-                useProfileTimePreferences && styles.buttonDisabled,
-                selectedTimes.includes(time) && styles.optionButtonActive,
+                disabled={useProfileTimePreferences}
+                style={[
+                    styles.optionButton,
+                    useProfileTimePreferences && styles.buttonDisabled,
+                    selectedTimes.length === 0 &&
+                    !useProfileTimePreferences &&
+                    styles.optionButtonActive,
                 ]}
-            onPress={() => {
+                onPress={() => {
                 setUseProfileTimePreferences(false);
-                if (selectedTimes.includes(time)) {
-                setSelectedTimes(
-                    selectedTimes.filter(
-                    (selectedTime) => selectedTime !== time
-                    )
-                );
-                return;
-                }
-
-                setSelectedTimes([
-                ...selectedTimes,
-                time,
-                ]);
-            }}
+                setSelectedTimes([]);
+                }}
             >
-            <ThemedText>{time}</ThemedText>
+                <ThemedText>Any</ThemedText>
             </Pressable>
-        ))}
+
+            {timeOptions.map((time) => (
+                <Pressable
+                disabled={useProfileTimePreferences}
+                key={time}
+                style={[
+                    styles.optionButton,
+                    useProfileTimePreferences && styles.buttonDisabled,
+                    selectedTimes.includes(time) && styles.optionButtonActive,
+                    ]}
+                onPress={() => {
+                    setUseProfileTimePreferences(false);
+                    if (selectedTimes.includes(time)) {
+                    setSelectedTimes(
+                        selectedTimes.filter(
+                        (selectedTime) => selectedTime !== time
+                        )
+                    );
+                    return;
+                    }
+
+                    setSelectedTimes([
+                    ...selectedTimes,
+                    time,
+                    ]);
+                }}
+                >
+                <ThemedText>{time}</ThemedText>
+                </Pressable>
+            ))}
     </ThemedView>
 
     <ThemedText style={styles.sectionLabel}>Radius</ThemedText>
@@ -348,6 +404,7 @@ export default function HomeScreen() {
     </Pressable>
 
     {hasSearched && (
+      <ThemedView>
         <ThemedView style={styles.sectionHeader}>
           <ThemedText style={styles.sectionLabel}>
             Results
@@ -357,14 +414,37 @@ export default function HomeScreen() {
             style={styles.clearResultsButton}
             onPress={() => setHasSearched(false)}
           >
-            <ThemedText >
+            <ThemedText>
               Clear Results
             </ThemedText>
           </Pressable>
         </ThemedView>
-        )}
+
+        <ThemedView style={styles.resultsGrid}>
+          {sortedProfiles.length === 0 ? (
+            <ThemedText style={styles.helperText}>
+              No activity matches found.
+              {"\n"}
+              Try selecting different activities or increasing your search radius!
+            </ThemedText>
+          ) : (
+          sortedProfiles.map((profile) => (
+            <SearchProfileCard
+              key={profile.id}
+              profile={profile}
+              onPress={() => setSelectedProfile(profile)}
+            />
+          ))
+          )}
+        </ThemedView>
+      </ThemedView>
+      )}
    </ThemedView>
   </ScrollView>
+    <SearchProfileModal
+    profile={selectedProfile}
+    onClose={() => setSelectedProfile(null)}
+  />
 </ThemedView>
   );
 }
@@ -553,5 +633,12 @@ clearResultsButton: {
   alignItems: 'center',
   maxWidth: 100,
   marginTop: 5,
+},
+
+resultsGrid: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  gap: Spacing.two,
+  marginTop: 12,
 },
 });

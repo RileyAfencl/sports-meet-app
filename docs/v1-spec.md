@@ -132,3 +132,6 @@ Search results is categorized and searchProfileCards are grouped undearneath the
 searchProfileCards are simple the user picture, First/Last Age, and that card is clickable and brings up searchProfileModal. 
 
 searchProfileModal contains all user profile information, a message button, a close button, and an x in the top right. It does not navigate to a new page, or change anything in the current discovery page so the user may return back to discovery upon review. If a user elects to message that user, it will reroute them to a new DM between them and that user, their searchProfileModal will also be available in the DM screen. 
+
+### Polish Things to Do Before Launch
+- Fix activities on profile modal to account for scaling into a large amount of activities selected. Most likely, list matching, then view all, or list matching first, 5 total and then view all button. 

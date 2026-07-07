@@ -11,6 +11,7 @@ type SearchProfileCardProps = {
     lastInitial: string;
     age: number;
     photoUrl?: string;
+    matchCount: number;
   };
   onPress: () => void;
 };
@@ -23,11 +24,11 @@ export function SearchProfileCard({ profile, onPress }: SearchProfileCardProps) 
       </ThemedView>
 
       <ThemedText style={styles.nameText}>
-        {profile.firstName} {profile.lastInitial}.
+        {profile.firstName} {profile.lastInitial}. - {profile.age}
       </ThemedText>
 
-      <ThemedText style={styles.ageText}>
-        {profile.age}
+      <ThemedText style={styles.matchText}>
+        {profile.matchCount} activity {profile.matchCount === 1 ? 'match' : 'matches'}
       </ThemedText>
     </Pressable>
   );
@@ -60,7 +61,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 4,
   },
-  ageText: {
+  matchText: {
     fontSize: 13,
     opacity: 0.8,
   },
