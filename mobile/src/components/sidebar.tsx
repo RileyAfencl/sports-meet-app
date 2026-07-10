@@ -4,23 +4,37 @@ import { Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+
 
 export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isPostingOpen, setIsPostingOpen] = useState(true);
-  const [isInboxOpen, setIsInboxOpen] = useState(true);
+  const [isPostingOpen, setIsPostingOpen] = useState(false);
+  const [isInboxOpen, setIsInboxOpen] = useState(false);
 
+if (isCollapsed) {
   return (
-  <ThemedView style={[styles.sidebar, isCollapsed && styles.sidebarCollapsed]}>
+    <Pressable
+      style={styles.floatingOpenButton}
+      onPress={() => setIsCollapsed(false)}
+    >
+      <Ionicons name="menu" size={28} color="black" />
+    </Pressable>
+  );
+}
+  return (
+  <ThemedView style={styles.sidebar}>
     <Pressable
         style={styles.collapseButton}
         onPress={() => setIsCollapsed(!isCollapsed)}
         >
-      <ThemedText style={styles.collapseButtonText}>
-        {isCollapsed ? '→' : '←'}
-      </ThemedText>
+        {!isCollapsed && <Ionicons
+          name="chevron-back"
+          size={24}
+          color="#000"
+        />}
     </Pressable>
    
     <Pressable
@@ -31,7 +45,7 @@ export function Sidebar() {
     </Pressable>
 
     <Pressable
-      style={[styles.navButton, pathname === '/hom' && styles.navButtonActive]}
+      style={[styles.navButton, pathname === '/home' && styles.navButtonActive]}
       onPress={() => router.push('/home')}
     >
       {!isCollapsed && <ThemedText>Discover</ThemedText>}
@@ -146,68 +160,90 @@ export function Sidebar() {
 }
 
 const styles = StyleSheet.create({
-  sidebar: {
-  width: 220,
+sidebar: {
+  top: 0,
+  left: 0,
+  bottom: 0,
+  width: '45%',
+  zIndex: 100,
+  position: 'absolute',
   borderRightWidth: 1,
   borderColor: '#333',
   padding: Spacing.three,
   gap: Spacing.two,
-  },
-  profileButton: {
+  paddingTop: 48,
+  paddingHorizontal: 12,
+},
+profileButton: {
   width: 78,
   height: 76,
   borderRadius: 36,
-  borderWidth: 3,
-  borderColor: '#fff',
+  borderWidth: 2,
+  borderColor: '#000000',
   alignItems: 'center',
   justifyContent: 'center',
   marginBottom: Spacing.three,
   alignSelf: 'center',
-  },
-  navButton: {
+},
+navButton: {
   borderWidth: 1,
   borderColor: '#555',
   borderRadius: 8,
   paddingHorizontal: 12,
   paddingVertical: 12,
-  },
-  navButtonActive: {
+},
+navButtonActive: {
   borderWidth: 3,
   borderColor: '#d418d4',
-  }, 
-  subNavButton: {
+}, 
+subNavButton: {
   paddingVertical: 6,
   paddingHorizontal: 10,
-  },
-  sidebarSpacer: {
+},
+sidebarSpacer: {
   flex: 1,
-  },
-  subNavContainer: {
+},
+subNavContainer: {
   paddingLeft: 16,
   borderLeftWidth: 1,
   borderLeftColor: '#444',
   marginLeft: 8,
   gap: 4,
-  },
-  subNavText: {
+},
+subNavText: {
   fontSize: 13,
   opacity: 0.8,
-  },
-  subNavRow: {
+},
+subNavRow: {
   flexDirection: 'row',
   alignItems: 'center',
-  },
-  subNavConnector: {
+},
+subNavConnector: {
   width: 20,
   height: 3,
   backgroundColor: '#e6dbdb',
   marginRight: 2,
-  },
-  sidebarCollapsed: {
-  width: 80,
-  },
-  collapseButton: {
-  alignSelf: 'flex-end',
+},
+floatingOpenButton: {
+  position: 'absolute',
+  top: 48,
+  left: 12,
+  width: 40,
+  height: 40,
+  borderWidth: 1,
+  borderColor: '#555',
+  borderRadius: 8,
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 200,
+  backgroundColor: '#fff',
+},
+floatingOpenButtonText: {
+  fontSize: 22,
+  fontWeight: '700',
+},
+collapseButton: {
+  alignSelf: 'center',
   width: 42,
   height: 32,
   borderWidth: 1,
@@ -215,16 +251,16 @@ const styles = StyleSheet.create({
   borderRadius: 6,
   alignItems: 'center',
   justifyContent: 'center',
-  marginBottom: Spacing.two,
- },
- collapseButtonText: {
+  marginTop: Spacing.five,
+},
+collapseButtonText: {
   fontSize: 35,
   fontWeight: '900',
-  marginBottom: 8,
- },
- navButtonContent: {
+  transform: [{ translateY: -6 }]
+},
+navButtonContent: {
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
- },
+},
 });

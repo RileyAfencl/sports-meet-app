@@ -103,6 +103,9 @@ const styles = StyleSheet.create({
   closeButton: {
     alignSelf: 'flex-end',
     padding: Spacing.one,
+    borderWidth: 1,
+    borderColor: '#000000',
+    borderRadius: 1,
   },
   closeButtonText: {
     fontWeight: '700',
@@ -147,7 +150,7 @@ const styles = StyleSheet.create({
   },
   messageButton: {
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: '#000000',
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',

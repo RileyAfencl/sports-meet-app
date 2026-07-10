@@ -10,6 +10,7 @@ import { Spacing } from '@/constants/theme';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import Slider from '@react-native-community/slider';
 import { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const timeOptions = [ 
     'Morning',
@@ -111,13 +112,10 @@ export default function HomeScreen() {
 
   const [selectedProfile, setSelectedProfile] = useState(null);
   
-
   return (
 <ThemedView style={styles.appShell}>
- 
-  <Sidebar />
-
  <ScrollView style={styles.mainContent}>
+    <SafeAreaView style={styles.safeArea}>
     <ThemedView style={styles.contentContainer}>
         <ThemedText type="title"
         style={styles.pageTitle}
@@ -257,10 +255,17 @@ export default function HomeScreen() {
                     return;
                     }
 
-                    setSelectedTimes([
-                    ...selectedTimes,
-                    time,
-                    ]);
+                    const nextSelectedTimes = [
+                      ...selectedTimes,
+                      time,
+                    ];
+
+                    if (nextSelectedTimes.length === timeOptions.length) {
+                      setSelectedTimes([]);
+                      return;
+                    }
+
+                  setSelectedTimes(nextSelectedTimes);
                 }}
                 >
                 <ThemedText>{time}</ThemedText>
@@ -268,7 +273,7 @@ export default function HomeScreen() {
             ))}
     </ThemedView>
 
-    <ThemedText style={styles.sectionLabel}>Radius</ThemedText>
+    <ThemedText style={styles.sectionLabel}>Location Radius</ThemedText>
 
     <ThemedView style={styles.radiusHeader}>
       <ThemedText style={styles.helperText}>
@@ -369,8 +374,9 @@ export default function HomeScreen() {
       </ThemedView>
     </ThemedView>
 
+    <ThemedView style={styles.ageSliderContainer}>
     <MultiSlider
-      sliderLength={600}
+      sliderLength={320}
       values={ageRange}
       min={18}
       max={80}
@@ -388,6 +394,7 @@ export default function HomeScreen() {
         width: 20,
       }}
     />
+    </ThemedView>
     
 
     <Pressable
@@ -440,11 +447,13 @@ export default function HomeScreen() {
       </ThemedView>
       )}
    </ThemedView>
+   </SafeAreaView>
   </ScrollView>
     <SearchProfileModal
     profile={selectedProfile}
     onClose={() => setSelectedProfile(null)}
   />
+  <Sidebar />
 </ThemedView>
   );
 }
@@ -454,18 +463,19 @@ appShell: {
   flex: 1,
   flexDirection: 'row',
 },
-
 mainContent: {
   flex: 1,
-  padding: Spacing.four,
 },
-
+safeArea: {
+  flex: 1,
+  paddingHorizontal: Spacing.four,
+  paddingBottom: 40,
+},
 sectionLabel: {
   marginTop: 16,
   marginBottom: 8,
   fontWeight: '700',
 },
-
 input: {
   borderWidth: 1,
   borderColor: '#555',
@@ -473,14 +483,12 @@ input: {
   paddingHorizontal: 14,
   paddingVertical: 12,
   fontSize: 16,
-  color: '#fff',
+  color: '#000000',
 },
-
 optionRow: {
   flexDirection: 'row',
   gap: Spacing.two,
 },
-
 optionButton: {
   flex: 1,
   borderWidth: 1,
@@ -489,15 +497,13 @@ optionButton: {
   paddingVertical: 12,
   alignItems: 'center',
 },
-
 helperText: {
   fontSize: 12,
   opacity: 0.7,
 },
-
 searchButton: {
   borderWidth: 1,
-  borderColor: '#fff',
+  borderColor: '#000000',
   borderRadius: 8,
   paddingVertical: 12,
   marginTop: 20,
@@ -505,36 +511,30 @@ searchButton: {
   alignItems: 'center',
   minWidth: 300,
 },
-
 searchButtonText: {
   fontWeight: '700',
 },
-
 tagContainer: {
   flexDirection: 'row',
   flexWrap: 'wrap',
   gap: Spacing.two,
   marginTop: 8,
 },
-
 tagBubble: {
   borderWidth: 1,
-  borderColor: '#fff',
+  borderColor: '#000000',
   borderRadius: 999,
   paddingHorizontal: 14,
   paddingVertical: 8,
 },
-
 tagText: {
   fontSize: 14,
 },
-
 sectionHeader: {
   flexDirection: 'row',
   alignItems: 'center',
   gap: Spacing.two,
 },
-
 profileActivityButton: {
   borderWidth: 1,
   borderColor: '#555',
@@ -543,87 +543,80 @@ profileActivityButton: {
   paddingVertical: 4,
   marginTop: 10
 },
-
 profileActivityButtonActive: {
   borderColor: '#8b5cf6',
   borderWidth: 2,
 },
-
 profileActivityButtonText: {
   fontSize: 11,
   fontWeight: '600',
 },
-
 selectedFilterRow: {
   flexDirection: 'row',
   alignItems: 'center',
   gap: Spacing.two,
   marginTop: 8,
 },
-
 selectedFilterLabel: {
   fontWeight: '700',
   fontSize: 13,
 },
-
 contentContainer: {
   width: '100%',
   maxWidth: 600,
   alignSelf: 'center',
 },
-
 pageDescription: {
   marginTop: 4,
   textAlign: 'center',
   marginBottom: 24,
   opacity: 0.7,
 },
-
 pageTitle: {
   textAlign: 'center',
   marginBottom: 24,
 },
-
 optionButtonActive: {
   borderColor: '#8b5cf6',
   borderWidth: 2,
 },
-
 buttonDisabled: {
   opacity: 0.5,
 },
-
 radiusHeader: {
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
   marginTop: 8,
 },
-
 slider: {
   width: '100%',
   height: 40,
   marginBottom: 20,
 },
-
 ageInputRow: {
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
   marginTop: 8,
+  marginRight:4,
+  marginLeft:4,
 },
-
 ageInput: {
   borderWidth: 1,
   borderColor: '#555',
   borderRadius: 8,
   paddingHorizontal: 10,
   paddingVertical: 6,
-  color: '#fff',
+  color: '#000000',
   width: 72,
   textAlign: 'center',
 },
-
+ageSliderContainer: {
+  alignItems: 'center',
+  alignSelf: 'stretch',
+  marginTop: 8,
+},
 clearResultsButton: {
   flex: 1,
   borderWidth: 1,
@@ -634,7 +627,6 @@ clearResultsButton: {
   maxWidth: 100,
   marginTop: 5,
 },
-
 resultsGrid: {
   flexDirection: 'row',
   flexWrap: 'wrap',
