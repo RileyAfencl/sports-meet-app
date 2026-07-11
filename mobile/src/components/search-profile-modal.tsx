@@ -51,9 +51,11 @@ export function SearchProfileModal({
               {profile.firstName} {profile.lastInitial}. - {profile.age}
             </ThemedText>
 
-            <ThemedText style={styles.subText}>
-              {profile.distanceMiles} miles away
-            </ThemedText> 
+            {profile.distanceMiles !== undefined && (
+              <ThemedText style={styles.subText}>
+                {profile.distanceMiles.toFixed(1)} miles away
+              </ThemedText>
+            )}
            </ThemedView>
 
             <ThemedView style={styles.profileRightColumn}>

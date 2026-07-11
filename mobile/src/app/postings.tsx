@@ -1,16 +1,36 @@
-import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
-
 import { DateRangePicker } from '@/components/daterangepicker';
+import { SearchPostingCard } from '@/components/search-posting-card';
 import { Sidebar } from '@/components/sidebar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { activityOptions } from '@/constants/activity-options';
 import { Spacing } from '@/constants/theme';
-import MultiSlider from '@ptomasroos/react-native-multi-slider';
+import { Posting } from '@/types/posting';
+import { Sex } from '@/types/sex';
 import Slider from '@react-native-community/slider';
 import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const visibilityOptions = ['Men', 'Women', 'Other', 'Anyone'];
+const currentUserAge = 27;
+
+const currentUserSex: Sex = 'male';
+
+const mockPostings: Posting[] = [
+  { id: '1', 
+    title: 'test posting one', 
+    activity: 'Basketball', 
+    dateTime: new Date('2026-07-17T18:30:00'),
+    distanceMiles: 2.3,
+    currentParticipants: 3,
+    maxParticipants: 4,
+    visibility: ['anyone'],
+    ageRange: {
+      min: 21,
+      max: 35,
+    },
+   }
+];
 
 export default function PostingsScreen() {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -27,31 +47,62 @@ export default function PostingsScreen() {
 
   const shouldShowActivityResults = activitySearch.trim().length > 0;
 
-  const [visibilityPreferences, setVisibilityPreferences] = useState<string[]>([]);
-
   const [radius, setRadius] = useState(5);
-
-  const [ageRange, setAgeRange] = useState([18, 80]);
-  const [minAgeText, setMinAgeText] = useState('18');
-  const [maxAgeText, setMaxAgeText] = useState('80');
 
   const [hasSearched, setHasSearched] = useState(false);
 
-  const syncAgeRange = (values: number[]) => {
-    setAgeRange(values);
-    setMinAgeText(String(values[0]));
-    setMaxAgeText(String(values[1]));
-  };
+  const [selectedPosting, setSelectedPosting] = useState<Posting | null>(null);
+
+  const filteredPostings = mockPostings
+  .filter((posting) => {
+    const isNotFull =
+      posting.maxParticipants === null ||
+      posting.currentParticipants < posting.maxParticipants;
+
+  const matchesActivity =
+    selectedActivities.length === 0 ||
+    selectedActivities.includes(posting.activity);
+
+  const matchesRadius =
+      posting.distanceMiles <= radius;
+
+  const postingDate = posting.dateTime.getTime();
+
+  const matchesStartDate =
+    startDate === null ||
+    postingDate >= startDate.getTime();
+  
+  const matchesEndDate =
+    endDate === null ||
+    postingDate <= endDate.getTime();
+
+  const userIsAgeEligible =
+  currentUserAge >= posting.ageRange.min &&
+  currentUserAge <= posting.ageRange.max;
+
+  const userIsVisibilityEligible =
+  posting.visibility.includes('anyone') ||
+  posting.visibility.includes(currentUserSex);
+
+  return (
+      isNotFull &&
+      userIsAgeEligible &&
+      userIsVisibilityEligible &&
+      matchesActivity &&
+      matchesRadius &&
+      matchesStartDate &&
+      matchesEndDate
+    );
+  })
+  .sort(
+    (a, b) =>
+      a.dateTime.getTime() - b.dateTime.getTime()
+  );
 
   const handleSearch = () => {
     const searchPayload = {
       activities: selectedActivities,
-      visibilityPreferences,
       radiusMiles: radius,
-      ageRange: {
-        min: ageRange[0],
-        max: ageRange[1],
-      },
       dateRange: {
         start: startDate?.toISOString() ?? null,
         end: endDate?.toISOString() ?? null,
@@ -96,6 +147,7 @@ export default function PostingsScreen() {
       <Sidebar />
 
       <ScrollView style={styles.mainContent}>
+       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.contentContainer}>
           <ThemedText type="title" style={styles.pageTitle}>
             Posting Board
@@ -153,39 +205,6 @@ export default function PostingsScreen() {
               </Pressable>
             ))}
           </ThemedView>
-
-          <ThemedText style={styles.sectionLabel}>Posting Visibility</ThemedText>
-            <ThemedView style={styles.optionRow}>
-                {visibilityOptions.map((option) => (
-                    <Pressable
-                        key={option}
-                        style={[
-                          styles.optionButton,
-                          visibilityPreferences.includes(option) &&
-                            styles.optionButtonActive,
-                        ]}
-                        onPress={() =>
-                          option === 'Anyone'
-                            ? setVisibilityPreferences(['Anyone'])
-                            : toggleArrayOption(
-                                option,
-                                visibilityPreferences,
-                                setVisibilityPreferences,
-                                ['Men', 'Women', 'Other'],
-                                'Anyone'
-                              )
-                        }
-                      >
-                        <ThemedText style={styles.optionButtonText}>
-                          {option}
-                        </ThemedText>
-                    </Pressable>
-                    ))}
-                </ThemedView>
-          
-                  <ThemedText style={styles.helperText}>
-                    Visibility determines who may see your posting. In the posting board, visibility controls only determine who can see and view your posting. Direct Message permissions are unchanged.  
-                  </ThemedText>
           
           <DateRangePicker
             startDate={startDate}
@@ -212,99 +231,6 @@ export default function PostingsScreen() {
             maximumTrackTintColor="#555"
             thumbTintColor="#8b5cf6"
           />
-
-          <ThemedText style={styles.sectionLabel}>Age Range</ThemedText>
-
-          <ThemedView style={styles.ageInputRow}>
-            <ThemedView>
-              <ThemedText style={styles.helperText}>Min Age</ThemedText>
-              <TextInput
-                style={styles.ageInput}
-                value={minAgeText}
-                keyboardType="numeric"
-                onChangeText={(text) => {
-                  const digitsOnly = text.replace(/[^0-9]/g, '');
-                  setMinAgeText(digitsOnly);
-
-                  if (digitsOnly === '') return;
-
-                  const num = Number(digitsOnly);
-
-                  if (num >= 18 && num <= ageRange[1]) {
-                    setAgeRange([num, ageRange[1]]);
-                  }
-                }}
-                onBlur={() => {
-                  let num = Number(minAgeText);
-
-                  if (!minAgeText || isNaN(num)) {
-                    num = 18;
-                  }
-
-                  num = Math.max(18, Math.min(num, ageRange[1]));
-
-                  setAgeRange([num, ageRange[1]]);
-                  setMinAgeText(String(num));
-                }}
-              />
-            </ThemedView>
-
-            <ThemedView>
-              <ThemedText style={styles.helperText}>Max Age</ThemedText>
-              <TextInput
-                style={styles.ageInput}
-                value={maxAgeText}
-                keyboardType="numeric"
-                onChangeText={(text) => {
-                  const digitsOnly = text.replace(/[^0-9]/g, '');
-                  setMaxAgeText(digitsOnly);
-
-                  if (digitsOnly === '') return;
-
-                  const num = Number(digitsOnly);
-
-                  if (num >= ageRange[0] && num <= 80) {
-                    setAgeRange([ageRange[0], num]);
-                  }
-                }}
-                onBlur={() => {
-                  let num = Number(maxAgeText);
-
-                  if (!maxAgeText || isNaN(num)) {
-                    num = 80;
-                  }
-
-                  num = Math.max(ageRange[0], Math.min(num, 80));
-
-                  setAgeRange([ageRange[0], num]);
-                  setMaxAgeText(String(num));
-                }}
-              />
-            </ThemedView>
-          </ThemedView>
-
-          <ThemedView style={styles.ageSliderContainer}>
-              <MultiSlider
-                sliderLength={320}
-                values={ageRange}
-                min={18}
-                max={80}
-                step={1}
-                onValuesChange={syncAgeRange}
-                selectedStyle={{
-                  backgroundColor: '#8b5cf6',
-                }}
-                unselectedStyle={{
-                  backgroundColor: '#555',
-                }}
-                markerStyle={{
-                  backgroundColor: '#8b5cf6',
-                  height: 20,
-                  width: 20,
-                }}
-              />
-            </ThemedView>
-
           <Pressable
             style={[
               styles.searchButton,
@@ -331,12 +257,25 @@ export default function PostingsScreen() {
                 </Pressable>
               </ThemedView>
 
-              <ThemedText style={styles.helperText}>
-                Posting results will render here.
-              </ThemedText>
+              <ThemedView style={styles.resultsGrid}>
+                {filteredPostings.length === 0 ? (
+                  <ThemedText style={styles.helperText}>
+                    No postings matched your filters.
+                  </ThemedText>
+                ) : (
+                  filteredPostings.map((posting) => (
+                    <SearchPostingCard
+                      key={posting.id}
+                      posting={posting}
+                      onPress={() => setSelectedPosting(posting)}
+                    />
+                  ))
+                )}
+              </ThemedView>
             </ThemedView>
           )}
         </ThemedView>
+       </SafeAreaView>
       </ScrollView>
     </ThemedView>
   );
@@ -350,6 +289,11 @@ appShell: {
 mainContent: {
   flex: 1,
   padding: Spacing.four,
+},
+safeArea: {
+  flex: 1,
+  paddingHorizontal: Spacing.four,
+  paddingBottom: 40,
 },
 sectionLabel: {
   marginTop: 16,
@@ -383,7 +327,7 @@ helperText: {
 },
 searchButton: {
   borderWidth: 1,
-  borderColor: '#fff',
+  borderColor: '#000000',
   borderRadius: 8,
   paddingVertical: 12,
   marginTop: 20,

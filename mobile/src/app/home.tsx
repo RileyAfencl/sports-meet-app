@@ -1,5 +1,3 @@
-import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
-
 import { SearchProfileCard } from '@/components/search-profile-card';
 import { SearchProfileModal } from '@/components/search-profile-modal';
 import { Sidebar } from '@/components/sidebar';
@@ -7,9 +5,12 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { activityOptions } from '@/constants/activity-options';
 import { Spacing } from '@/constants/theme';
+import type { Profile } from '@/types/profile';
+import { Sex, VisibilityPreference } from '@/types/sex';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import Slider from '@react-native-community/slider';
 import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const timeOptions = [ 
@@ -18,12 +19,19 @@ const timeOptions = [
     'Evening',   
 ]
 
-const mockProfiles = [
+const currentUserSex: Sex = 'other';
+
+const currentUserVisibilityPreferences: VisibilityPreference[] = [
+  'anyone',
+];
+
+const mockProfiles: Profile[] = [
   {
     id: '1',
     firstName: 'John',
     lastInitial: 'F',
     age: 27,
+    sex: 'male',
     activities: [ 'Lifting',
                   'Running',
                   'Pickleball',
@@ -33,6 +41,7 @@ const mockProfiles = [
                   'Golf',
                 ],
     preferredTimes: ['Morning', 'Evening'],
+    visibilityPreferences: ['anyone'],
     distanceMiles: 2.3,
     aboutMe:
       'I am looking for consistent activity partners who are reliable, easygoing, and interested in getting outside or training a few times a week. I usually prefer weekday evenings and weekends, and I am open to both casual sessions and more structured workouts depending on the activity. xxxxxxxxxxxxxxx',
@@ -43,14 +52,22 @@ const mockProfiles = [
     firstName: 'Sarah',
     lastInitial: 'M',
     age: 24,
+    sex: 'female',
     activities: ['Pickleball', 'Hiking'],
+    visibilityPreferences: ['female'],
+    distanceMiles: 4.7,
+    preferredTimes: ['Any'],
   },
   {
     id: '3',
     firstName: 'Alex',
     lastInitial: 'T',
     age: 31,
+    sex: 'other',
     activities: ['Lifting', 'Basketball'],
+    preferredTimes: ['Any'],
+    distanceMiles: 8.2,
+    visibilityPreferences: ['other'],
   },
 ];
 
@@ -95,22 +112,62 @@ export default function HomeScreen() {
       setHasSearched(true);
     };
     
-    const profilesWithMatchCounts = mockProfiles.map((profile) => {
-      const matchCount = profile.activities.filter((activity) =>
-        selectedActivities.includes(activity)
-      ).length;
+    const filteredProfiles = mockProfiles
+      .filter((profile) => {
+        const profileAllowsCurrentUser =
+          profile.visibilityPreferences.includes('anyone') ||
+          profile.visibilityPreferences.includes(currentUserSex);
 
-      return {
-        ...profile,
-        matchCount,
-      };
-    });
+        const currentUserAllowsProfile =
+          currentUserVisibilityPreferences.includes('anyone') ||
+          currentUserVisibilityPreferences.includes(profile.sex);
 
-    const sortedProfiles = profilesWithMatchCounts
-      .filter((profile) => profile.matchCount > 0)
+        const userCanViewProfile =
+          profileAllowsCurrentUser &&
+          currentUserAllowsProfile;
+
+        const matchesActivity =
+          selectedActivities.length === 0 ||
+          selectedActivities.some((activity) =>
+            profile.activities.includes(activity)
+          );
+
+        const matchesTime =
+          selectedTimes.length === 0 ||
+          profile.preferredTimes.includes('Any') ||
+          selectedTimes.some((time) =>
+            profile.preferredTimes.includes(time)
+          );
+
+        const matchesRadius =
+          profile.distanceMiles !== undefined &&
+          profile.distanceMiles <= radius;
+
+        const matchesAge =
+          profile.age >= ageRange[0] &&
+          profile.age <= ageRange[1];
+
+        return (
+          userCanViewProfile &&
+          matchesActivity &&
+          matchesTime &&
+          matchesRadius &&
+          matchesAge
+        );
+      })
+      .map((profile) => {
+        const matchCount = profile.activities.filter((activity) =>
+          selectedActivities.includes(activity)
+        ).length;
+
+        return {
+          ...profile,
+          matchCount,
+        };
+      })
       .sort((a, b) => b.matchCount - a.matchCount);
 
-  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   
   return (
 <ThemedView style={styles.appShell}>
@@ -428,14 +485,14 @@ export default function HomeScreen() {
         </ThemedView>
 
         <ThemedView style={styles.resultsGrid}>
-          {sortedProfiles.length === 0 ? (
+          {filteredProfiles.length === 0 ? (
             <ThemedText style={styles.helperText}>
               No activity matches found.
               {"\n"}
               Try selecting different activities or increasing your search radius!
             </ThemedText>
           ) : (
-          sortedProfiles.map((profile) => (
+          filteredProfiles.map((profile) => (
             <SearchProfileCard
               key={profile.id}
               profile={profile}

@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { activityOptions } from '@/constants/activity-options';
 import { Spacing } from '@/constants/theme';
+import { sexLabels, sexOptions, type Sex } from '@/types/sex';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
@@ -21,7 +22,7 @@ export default function ProfileCreateScreen() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
-  const [sex, setSex] = useState<string | null>(null);
+  const [sex, setSex] = useState<Sex | null>(null);
   const [visibilityPreference, setVisibilityPreference] = useState<string | null>(null);
   const [aboutMe, setAboutMe] = useState('');
   const [preferredTimes, setPreferredTimes] = useState<string[]>(['Any']);
@@ -112,35 +113,20 @@ export default function ProfileCreateScreen() {
         <ThemedText style={styles.sectionLabel}>Sex</ThemedText>
 
         <ThemedView style={styles.optionRow}>
-          <Pressable
-            style={[
-              styles.optionButton,
-              sex === 'Male' && styles.optionButtonActive,
-            ]}
-            onPress={() => setSex('Male')}
-          >
-            <ThemedText style={styles.optionButtonText}>Male</ThemedText>
-          </Pressable>
-
-          <Pressable
-            style={[
-              styles.optionButton,
-              sex === 'Female' && styles.optionButtonActive,
-            ]}
-            onPress={() => setSex('Female')}
-          >
-            <ThemedText style={styles.optionButtonText}>Female</ThemedText>
-          </Pressable>
-
-          <Pressable
-            style={[
-              styles.optionButton,
-              sex === 'Other' && styles.optionButtonActive,
-            ]}
-            onPress={() => setSex('Other')}
-          >
-            <ThemedText style={styles.optionButtonText}>Other</ThemedText>
-          </Pressable>
+          {sexOptions.map((option) => (
+            <Pressable
+              key={option}
+              style={[
+                styles.optionButton,
+                sex === option && styles.optionButtonActive,
+              ]}
+              onPress={() => setSex(option)}
+            >
+              <ThemedText style={styles.optionButtonText}>
+                {sexLabels[option]}
+              </ThemedText>
+            </Pressable>
+          ))}
         </ThemedView>
 
         <ThemedText style={styles.sectionLabel}>Activities</ThemedText>

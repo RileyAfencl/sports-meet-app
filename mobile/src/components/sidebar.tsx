@@ -164,7 +164,7 @@ sidebar: {
   top: 0,
   left: 0,
   bottom: 0,
-  width: '45%',
+  width: '42%',
   zIndex: 100,
   position: 'absolute',
   borderRightWidth: 1,
@@ -252,6 +252,7 @@ collapseButton: {
   alignItems: 'center',
   justifyContent: 'center',
   marginTop: Spacing.five,
+  marginBottom: Spacing.two,
 },
 collapseButtonText: {
   fontSize: 35,

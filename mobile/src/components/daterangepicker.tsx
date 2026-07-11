@@ -115,7 +115,7 @@ dateButton: {
     borderColor: '#555',
     borderRadius: 8,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 6,
     alignItems: 'center',
 },
 dateButtonLabel: {
