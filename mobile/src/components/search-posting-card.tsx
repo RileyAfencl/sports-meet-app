@@ -1,6 +1,5 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
 import { Posting } from '@/types/posting';
 import { postingVisibilityLabels } from '@/types/sex';
 import { Pressable, StyleSheet } from 'react-native';
@@ -23,71 +22,68 @@ export function SearchPostingCard({
   });
 
   const participantText =
-    posting.maxParticipants === null
-      ? `${posting.currentParticipants} participants`
-      : `${posting.currentParticipants} / ${posting.maxParticipants} participants`;
+  posting.maxParticipants === null
+    ? `${posting.currentParticipants}/∞`
+    : `${posting.currentParticipants}/${posting.maxParticipants}`;
 
   return (
-    <Pressable style={styles.card} onPress={onPress}>
-      <ThemedText style={styles.title}>
-        {posting.title}
+  <Pressable style={styles.card} onPress={onPress}>
+    <ThemedText style={styles.title} numberOfLines={1}>
+      {posting.title}
+    </ThemedText>
+
+    <ThemedView style={styles.metaRow}>
+      <ThemedText style={styles.metaText} numberOfLines={1}>
+        {formattedDateTime}
       </ThemedText>
 
-      <ThemedText style={styles.activity}>
-        {posting.activity}
+      <ThemedText style={styles.metaText}>
+        {posting.distanceMiles.toFixed(1)} mi
       </ThemedText>
 
-      <ThemedView style={styles.details}>
-        <ThemedText style={styles.detailText}>
-          {formattedDateTime}
-        </ThemedText>
-
-        <ThemedText style={styles.detailText}>
-          {posting.distanceMiles.toFixed(1)} miles away
-        </ThemedText>
-
-        <ThemedText style={styles.detailText}>
-          {participantText}
-        </ThemedText>
-
-        <ThemedText style={styles.detailText}>
-            Visibility:{' '}
+      <ThemedText style={styles.metaText}>
+            {' '}
             {posting.visibility
                 .map((value) => postingVisibilityLabels[value])
                 .join(', ')}
             </ThemedText>
-      </ThemedView>
-    </Pressable>
-  );
+
+
+      <ThemedText style={styles.metaText}>
+        {participantText}
+      </ThemedText>
+    </ThemedView>
+  </Pressable>
+);
 }
 
 const styles = StyleSheet.create({
 card: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#555',
-    borderRadius: 10,
-    padding: Spacing.three,
-    marginBottom: Spacing.two,
+  width: '100%',
+  borderWidth: 2,
+  borderColor: '#555',
+  borderRadius: 1,
+  paddingHorizontal: 6,
+  paddingVertical: 3,
 },
 title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000',
+  fontSize: 16,
+  fontWeight: '700',
+  color: '#000',
 },
-activity: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 4,
-    marginBottom: 10,
-    color: '#000',
+metaRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
 },
-details: {
-    gap: 4,
+metaText: {
+  fontSize: 14,
+  color: '#000',
+  opacity: .9
 },
-detailText: {
-    fontSize: 13,
-    opacity: 0.75,
-    color: '#000',
+participantText: {
+  fontSize: 13,
+  fontWeight: '700',
+  color: '#000',
 },
 });

@@ -148,3 +148,8 @@ exist only for the current search
 - Fix activities on profile modal to account for scaling into a large amount of activities selected. Most likely, list matching, then view all, or list matching first, 5 total and then view all button.
 - When you hit discovery on the sidebar, it auto-uncollapses the postings board/messages button, need to fix that. 
 - Fix activity selector in profile-create, needs to hide activities after first 3, list most recent 3 selected, a view all possible and a view all selected function. 
+
+## Posting Board Polish Items
+- Animate Expand/Collapse
+- Sort groups by total # of returned postings
+- Some sort of visual nesting to show

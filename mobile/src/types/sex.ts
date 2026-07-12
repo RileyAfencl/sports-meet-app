@@ -30,3 +30,9 @@ export const postingVisibilityLabels: Record<
   other: 'Other',
   anyone: 'Anyone',
 };
+
+export const sexInitials: Record<Sex, string> = {
+  male: 'M',
+  female: 'F',
+  other: 'O',
+};

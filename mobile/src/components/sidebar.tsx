@@ -45,8 +45,8 @@ if (isCollapsed) {
     </Pressable>
 
     <Pressable
-      style={[styles.navButton, pathname === '/home' && styles.navButtonActive]}
-      onPress={() => router.push('/home')}
+      style={[styles.navButton, pathname === '/discovery' && styles.navButtonActive]}
+      onPress={() => router.push('/discovery')}
     >
       {!isCollapsed && <ThemedText>Discover</ThemedText>}
     </Pressable>

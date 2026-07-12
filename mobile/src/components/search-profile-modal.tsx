@@ -3,19 +3,11 @@ import { Modal, Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import type { Profile } from '@/types/profile';
+import { sexInitials } from '@/types/sex';
 
 type SearchProfileModalProps = {
-  profile: {
-    id: string;
-    firstName: string;
-    lastInitial: string;
-    age: number;
-    activities: string[];
-    preferredTimes?: string[];
-    distanceMiles?: number;
-    aboutMe?: string;
-    matchCount: number;
-  } | null;
+  profile: Profile | null;
   onClose: () => void;
 };
 
@@ -48,7 +40,7 @@ export function SearchProfileModal({
               <ThemedText style={styles.photoText}>Photo</ThemedText>
             </ThemedView>
             <ThemedText style={styles.nameText}>
-              {profile.firstName} {profile.lastInitial}. - {profile.age}
+             {profile.firstName} {profile.lastInitial}. - {sexInitials[profile.sex]}, {profile.age}
             </ThemedText>
 
             {profile.distanceMiles !== undefined && (

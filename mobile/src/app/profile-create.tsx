@@ -41,7 +41,7 @@ export default function ProfileCreateScreen() {
 
     console.log(profilePayload);
 
-    router.push('/home');
+    router.push('/discovery');
   };
 
   const toggleArrayOption = (

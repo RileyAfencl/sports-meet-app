@@ -25,6 +25,15 @@ const currentUserVisibilityPreferences: VisibilityPreference[] = [
   'anyone',
 ];
 
+const currentUserActivities = [
+  'Lifting',
+  'Hiking',
+  'Pickleball'
+]
+
+const currentUserTimes = ['Afternoon', 'Evening']
+
+
 const mockProfiles: Profile[] = [
   {
     id: '1',
@@ -223,8 +232,18 @@ export default function HomeScreen() {
             styles.profileActivityButton,
             useProfileActivities && styles.profileActivityButtonActive,
             ]}
-            onPress={() => setUseProfileActivities(!useProfileActivities)}
-        >
+            onPress={() => {
+                      const nextValue = !useProfileActivities;
+
+                      setUseProfileActivities(nextValue);
+
+                      if (nextValue) {
+                        setSelectedActivities(currentUserActivities);
+                      } else {
+                        setSelectedActivities([]);
+                      }
+                    }}
+            >
             <ThemedText style={styles.profileActivityButtonText}>
             Use Profile Activities
             </ThemedText>
@@ -259,13 +278,15 @@ export default function HomeScreen() {
           useProfileTimePreferences && styles.profileActivityButtonActive,
         ]}
         onPress={() => {
-            const newValue = !useProfileTimePreferences;
+          const nextValue = !useProfileTimePreferences;
 
-            setUseProfileTimePreferences(newValue);
+          setUseProfileTimePreferences(nextValue);
 
-            if (newValue) {
-                setSelectedTimes([]);
-            }
+          if (nextValue) {
+            setSelectedTimes(currentUserTimes);
+          } else {
+            setSelectedTimes([]);
+          }
         }}
       >
         <ThemedText style={styles.profileActivityButtonText}>

@@ -5,8 +5,10 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { activityOptions } from '@/constants/activity-options';
 import { Spacing } from '@/constants/theme';
+import { mockPostings } from '@/mock-data/mock-postings';
 import { Posting } from '@/types/posting';
 import { Sex } from '@/types/sex';
+import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
@@ -16,29 +18,13 @@ const currentUserAge = 27;
 
 const currentUserSex: Sex = 'male';
 
-const mockPostings: Posting[] = [
-  { id: '1', 
-    title: 'test posting one', 
-    activity: 'Basketball', 
-    dateTime: new Date('2026-07-17T18:30:00'),
-    distanceMiles: 2.3,
-    currentParticipants: 3,
-    maxParticipants: 4,
-    visibility: ['anyone'],
-    ageRange: {
-      min: 21,
-      max: 35,
-    },
-   }
-];
-
 export default function PostingsScreen() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const [activitySearch, setActivitySearch] = useState('');
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
-
+  const [expandedActivities, setExpandedActivities] = useState<string[]>([]);
   const filteredActivities = activityOptions.filter(
     (activity) =>
       activity.toLowerCase().includes(activitySearch.toLowerCase()) &&
@@ -109,37 +95,31 @@ export default function PostingsScreen() {
       },
     };
 
+    setExpandedActivities([]);
     console.log(searchPayload);
     setHasSearched(true);
   };
 
-  const toggleArrayOption = (
-    value: string,
-    currentValues: string[],
-    setValues: (values: string[]) => void,
-    allOptions: string[],
-    defaultValue: string
-  ) => {
-    const nextValues = currentValues.includes(value)
-      ? currentValues.filter((item) => item !== value)
-      : [...currentValues, value];
+  const postingsByActivity = filteredPostings.reduce<
+      Record<string, Posting[]>
+    >((groups, posting) => {
+      if (!groups[posting.activity]) {
+        groups[posting.activity] = [];
+      }
 
-    if (nextValues.length === allOptions.length) {
-      setValues([defaultValue]);
-      return;
-    }
+      groups[posting.activity].push(posting);
 
-    if (currentValues.includes(defaultValue)) {
-      setValues([value]);
-      return;
-    }
+      return groups;
+    }, {});
 
-    if (nextValues.length === 0) {
-      setValues([defaultValue]);
-      return;
-    }
-
-    setValues(nextValues);
+  const toggleActivitySection = (activity: string) => {
+    setExpandedActivities((currentActivities) =>
+      currentActivities.includes(activity)
+        ? currentActivities.filter(
+            (currentActivity) => currentActivity !== activity
+          )
+        : [...currentActivities, activity]
+    );
   };
 
   return (
@@ -247,31 +227,77 @@ export default function PostingsScreen() {
           {hasSearched && (
             <ThemedView>
               <ThemedView style={styles.sectionHeader}>
-                <ThemedText style={styles.sectionLabel}>Results</ThemedText>
+                <ThemedText style={styles.sectionLabel}>
+                  Results ({filteredPostings.length})
+                </ThemedText>
 
                 <Pressable
                   style={styles.clearResultsButton}
-                  onPress={() => setHasSearched(false)}
+                  onPress={() => {
+                    setHasSearched(false);
+                    setExpandedActivities([]);
+                  }}
                 >
                   <ThemedText>Clear Results</ThemedText>
                 </Pressable>
               </ThemedView>
 
-              <ThemedView style={styles.resultsGrid}>
-                {filteredPostings.length === 0 ? (
-                  <ThemedText style={styles.helperText}>
-                    No postings matched your filters.
-                  </ThemedText>
-                ) : (
-                  filteredPostings.map((posting) => (
-                    <SearchPostingCard
-                      key={posting.id}
-                      posting={posting}
-                      onPress={() => setSelectedPosting(posting)}
-                    />
-                  ))
-                )}
-              </ThemedView>
+              {filteredPostings.length === 0 ? (
+                <ThemedText style={styles.helperText}>
+                  No postings matched your filters.
+                </ThemedText>
+              ) : (
+                <ThemedView style={styles.resultsGrid}>
+                  {Object.entries(postingsByActivity).map(
+                    ([activity, postings]) => {
+                      const isExpanded =
+                        expandedActivities.includes(activity);
+
+                      return (
+                        <ThemedView
+                          key={activity}
+                          style={styles.activitySection}
+                        >
+                          <Pressable
+                            style={styles.activityHeader}
+                            onPress={() =>
+                              toggleActivitySection(activity)
+                            }
+                          >
+                            <ThemedText style={styles.activityHeaderText}>
+                              {activity} ({postings.length})
+                            </ThemedText>
+
+                            <Ionicons
+                              name={
+                                isExpanded
+                                  ? 'chevron-down'
+                                  : 'chevron-forward'
+                              }
+                              size={20}
+                              color="#000"
+                            />
+                          </Pressable>
+
+                          {isExpanded && (
+                            <ThemedView style={styles.postingList}>
+                              {postings.map((posting) => (
+                                <SearchPostingCard
+                                  key={posting.id}
+                                  posting={posting}
+                                  onPress={() =>
+                                    setSelectedPosting(posting)
+                                  }
+                                />
+                              ))}
+                            </ThemedView>
+                          )}
+                        </ThemedView>
+                      );
+                    }
+                  )}
+                </ThemedView>
+              )}
             </ThemedView>
           )}
         </ThemedView>
@@ -460,5 +486,31 @@ resultsGrid: {
   gap: Spacing.two,
   marginTop: 12,
 },
-
+activitySection: {
+  marginBottom: 8,
+},
+activityHeader: {
+  width: '100%',
+  minHeight: 44,
+  borderWidth: 1,
+  borderColor: '#555',
+  borderRadius: 6,
+  paddingHorizontal: 12,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+},
+activityHeaderText: {
+  fontSize: 15,
+  fontWeight: '700',
+  color: '#000',
+},
+postingList: {
+  marginTop: 4,
+  marginLeft: 12,
+  paddingLeft: 5,
+  borderLeftWidth: 2,
+  borderLeftColor: '#d0d0d0',
+  gap: 4,
+},
 });

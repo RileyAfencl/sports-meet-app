@@ -3,16 +3,11 @@ import { Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import type { Profile } from '@/types/profile';
+import { sexInitials } from '@/types/sex';
 
 type SearchProfileCardProps = {
-  profile: {
-    id: string;
-    firstName: string;
-    lastInitial: string;
-    age: number;
-    photoUrl?: string;
-    matchCount: number;
-  };
+  profile: Profile;
   onPress: () => void;
 };
 
@@ -24,7 +19,7 @@ export function SearchProfileCard({ profile, onPress }: SearchProfileCardProps) 
       </ThemedView>
 
       <ThemedText style={styles.nameText}>
-        {profile.firstName} {profile.lastInitial}. - {profile.age}
+        {profile.firstName} {profile.lastInitial}. - {sexInitials[profile.sex]}, {profile.age}
       </ThemedText>
 
       <ThemedText style={styles.matchText}>
