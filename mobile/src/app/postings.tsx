@@ -1,12 +1,18 @@
 import { DateRangePicker } from '@/components/daterangepicker';
+import { JoinPostingModal } from '@/components/join-posting-modal';
 import { SearchPostingCard } from '@/components/search-posting-card';
+import { SearchPostingModal } from '@/components/search-posting-modal';
+import { SearchProfileModal } from '@/components/search-profile-modal';
 import { Sidebar } from '@/components/sidebar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { ViewParticipantsModal } from '@/components/view-participants-modal';
 import { activityOptions } from '@/constants/activity-options';
 import { Spacing } from '@/constants/theme';
 import { mockPostings } from '@/mock-data/mock-postings';
+import { mockProfiles } from '@/mock-data/mock-profiles';
 import { Posting } from '@/types/posting';
+import { Profile } from '@/types/profile';
 import { Sex } from '@/types/sex';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
@@ -15,13 +21,16 @@ import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const currentUserAge = 27;
-
+ 
 const currentUserSex: Sex = 'male';
+
+const mockParticipants: Profile [] = mockProfiles;
 
 export default function PostingsScreen() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-
+  const [joinedPostingIds, setJoinedPostingIds] = useState<string[]>([]);
+  
   const [activitySearch, setActivitySearch] = useState('');
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [expandedActivities, setExpandedActivities] = useState<string[]>([]);
@@ -32,21 +41,31 @@ export default function PostingsScreen() {
   );
 
   const shouldShowActivityResults = activitySearch.trim().length > 0;
+  const [showJoinConfirmation, setShowJoinConfirmation] = useState(false);
+
+  const [joinPostingChat, setJoinPostingChat] = useState(false);
 
   const [radius, setRadius] = useState(5);
 
   const [hasSearched, setHasSearched] = useState(false);
 
   const [selectedPosting, setSelectedPosting] = useState<Posting | null>(null);
+  const [showParticipants, setShowParticipants] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [returnToParticipants, setReturnToParticipants] = useState(false);
+  
+
+  const isSelectedPostingJoined =
+  selectedPosting !== null &&
+  joinedPostingIds.includes(selectedPosting.id);
 
   const filteredPostings = mockPostings
   .filter((posting) => {
     const isNotFull =
       posting.maxParticipants === null ||
-      posting.currentParticipants < posting.maxParticipants;
+      posting.participants.length < posting.maxParticipants;
 
   const matchesActivity =
-    selectedActivities.length === 0 ||
     selectedActivities.includes(posting.activity);
 
   const matchesRadius =
@@ -124,7 +143,6 @@ export default function PostingsScreen() {
 
   return (
     <ThemedView style={styles.appShell}>
-      <Sidebar />
 
       <ScrollView style={styles.mainContent}>
        <SafeAreaView style={styles.safeArea}>
@@ -303,6 +321,82 @@ export default function PostingsScreen() {
         </ThemedView>
        </SafeAreaView>
       </ScrollView>
+
+      <SearchPostingModal
+        posting={selectedPosting}
+        isJoined={isSelectedPostingJoined}
+        onClose={() => setSelectedPosting(null)}
+        onCreatorPress={() => {
+          if (!selectedPosting?.creator) return;
+
+          setReturnToParticipants(false);
+          setSelectedProfile(selectedPosting.creator);
+        }}
+        onViewParticipants={() => {
+          setShowParticipants(true);
+        }}
+        onJoinPress={() => {
+            setJoinPostingChat(false);
+            setShowJoinConfirmation(true);
+          }}
+      />
+
+      <ViewParticipantsModal
+        participants={
+          selectedPosting?.participants ?? mockParticipants
+        }
+        visible={showParticipants}
+        onClose={() => setShowParticipants(false)}
+        onParticipantPress={(participant) => {
+          setShowParticipants(false);
+          setReturnToParticipants(true);
+          setSelectedProfile(participant);
+        }}
+      />
+
+      <SearchProfileModal
+        profile={selectedProfile}
+        onClose={() => {
+          setSelectedProfile(null);
+
+          if (returnToParticipants) {
+            setShowParticipants(true);
+            setReturnToParticipants(false);
+          }
+        }}
+      />
+
+      <JoinPostingModal
+        posting={selectedPosting}
+        visible={showJoinConfirmation}
+        joinPostingChat={joinPostingChat}
+        onJoinPostingChatChange={setJoinPostingChat}
+        onCancel={() => {
+          setShowJoinConfirmation(false);
+          setJoinPostingChat(false);
+        }}
+        onConfirm={() => {
+          if (!selectedPosting) return;
+
+          const joinPayload = {
+            postingId: selectedPosting.id,
+            joinPostingChat,
+          };
+
+          console.log('Join posting payload:', joinPayload);
+
+          setJoinedPostingIds((currentIds) =>
+            currentIds.includes(selectedPosting.id)
+              ? currentIds
+              : [...currentIds, selectedPosting.id]
+          );
+
+          setShowJoinConfirmation(false);
+          setJoinPostingChat(false);
+        }}
+      />
+
+      <Sidebar />
     </ThemedView>
   );
 }
@@ -372,7 +466,7 @@ tagContainer: {
 },
 tagBubble: {
   borderWidth: 1,
-  borderColor: '#fff',
+  borderColor: '#000000',
   borderRadius: 999,
   paddingHorizontal: 14,
   paddingVertical: 8,

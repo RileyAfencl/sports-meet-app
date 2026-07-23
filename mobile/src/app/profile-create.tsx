@@ -23,7 +23,6 @@ export default function ProfileCreateScreen() {
   const [lastName, setLastName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [sex, setSex] = useState<Sex | null>(null);
-  const [visibilityPreference, setVisibilityPreference] = useState<string | null>(null);
   const [aboutMe, setAboutMe] = useState('');
   const [preferredTimes, setPreferredTimes] = useState<string[]>(['Any']);
   const [visibilityPreferences, setVisibilityPreferences] = useState<string[]>([]);
@@ -35,7 +34,7 @@ export default function ProfileCreateScreen() {
       dateOfBirth,
       sex,
       activities: selectedActivities,
-      visibilityPreference,
+      visibilityPreferences,
       aboutMe,
     };
 
@@ -248,6 +247,7 @@ export default function ProfileCreateScreen() {
           placeholder="Tell people a little about yourself..."
           placeholderTextColor="#888"
           multiline
+          scrollEnabled
           maxLength={300}
           value={aboutMe}
           onChangeText={setAboutMe}
@@ -297,7 +297,7 @@ input: {
   paddingHorizontal: 14,
   paddingVertical: 12,
   fontSize: 16,
-  color: '#fff',
+  color: '#000000',
   alignSelf: 'stretch',
 },
 continueButton: {
@@ -364,7 +364,7 @@ descriptionInput: {
   fontSize: 16,
   color: '#000000',
   alignSelf: 'stretch',
-  minHeight: 120,
+  height: 120,
   textAlignVertical: 'top',
 },
 optionButtonActive: {

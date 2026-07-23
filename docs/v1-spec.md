@@ -153,3 +153,43 @@ exist only for the current search
 - Animate Expand/Collapse
 - Sort groups by total # of returned postings
 - Some sort of visual nesting to show
+- Reformat search posting modal
+- Scrollview for activity search results
+
+### Frontend Pass 2 — Complete V1 functionality
+
+This happens after the backend vertical slice, Vue, cloud work, and interview sprint.
+
+Add:
+
+Settings
+Profile editing
+Report user/posting
+Block/unblock
+Ban/moderation interfaces
+Overflow/ellipsis menus
+Feedback flows
+Confirmation and warning modals not required for the main slice
+Empty, error, loading, and permission states across every screen
+Remaining V1 validation and edge cases
+
+This pass makes the product functionally complete for launch.
+
+#### Frontend Pass 2 - Specific Items
+-Date/time setup for postings page.
+-Maps integration for location on postings page. 
+
+### Frontend Pass 3 — Visual polish
+
+Only after the underlying product works:
+
+Brand colors
+Background treatments
+Typography consistency
+Spacing and alignment
+Modal redesigns
+Icons and profile images
+Animations
+Responsive/device testing
+Accessibility and touch-target review
+Final consistency pass

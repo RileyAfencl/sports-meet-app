@@ -1,4 +1,5 @@
 import type { Posting } from '@/types/posting';
+import { mockProfiles } from './mock-profiles';
 
 export const mockPostings: Posting[] = [
   { id: '1', 
@@ -6,7 +7,9 @@ export const mockPostings: Posting[] = [
     activity: 'Basketball', 
     dateTime: new Date('2026-07-17T18:30:00'),
     distanceMiles: 2.3,
-    currentParticipants: 3,
+    creator: mockProfiles[0],
+    participants: mockProfiles,
+    locationName: 'Southview Park',
     maxParticipants: null,
     visibility: ['anyone'],
     ageRange: {
@@ -19,7 +22,13 @@ export const mockPostings: Posting[] = [
     activity: 'Basketball', 
     dateTime: new Date('2026-07-19T18:30:00'),
     distanceMiles: 2.3,
-    currentParticipants: 2,
+    creator: mockProfiles[1],
+    locationName: 'Grandwood Field',
+    participants: [
+        mockProfiles[0],
+        mockProfiles[1],
+        mockProfiles[4],
+      ],
     maxParticipants: 6,
     visibility: ['female'],
     ageRange: {
@@ -29,10 +38,12 @@ export const mockPostings: Posting[] = [
    },
    { id: '3', 
     title: 'test posting three', 
-    activity: 'Basketball', 
+    activity: 'Lifting', 
     dateTime: new Date('2026-07-19T18:30:00'),
     distanceMiles: 2.3,
-    currentParticipants: 2,
+    creator: mockProfiles[3],
+    locationName: 'Oz Fitness',
+    participants: mockProfiles,
     maxParticipants: 6,
     visibility: ['anyone'],
     ageRange: {
@@ -42,10 +53,12 @@ export const mockPostings: Posting[] = [
    },
    { id: '4', 
     title: 'test posting four', 
-    activity: 'Lifting', 
+    activity: 'Hiking', 
     dateTime: new Date('2026-07-22T18:30:00'),
     distanceMiles: 7.1,
-    currentParticipants: 5,
+    creator: mockProfiles[3],
+    locationName: 'Great Canyon Park',
+    participants: mockProfiles,
     maxParticipants: 6,
     visibility: ['anyone'],
     ageRange: {
@@ -58,12 +71,29 @@ export const mockPostings: Posting[] = [
     activity: 'Basketball', 
     dateTime: new Date('2026-07-17T18:30:00'),
     distanceMiles: 2.3,
-    currentParticipants: 3,
-    maxParticipants: 3,
+    creator: mockProfiles[4],
+    locationName: 'Rothwell Courts',
+    participants: mockProfiles,
+    maxParticipants: 5,
     visibility: ['anyone'],
     ageRange: {
       min: 21,
       max: 35,
     },
+   },
+  { id: '6', 
+    title: 'test posting six', 
+    activity: 'Basketball', 
+    dateTime: new Date('2026-07-17T18:30:00'),
+    distanceMiles: 2.3,
+    creator: mockProfiles[3],
+    locationName: 'Rothwell Courts',
+    participants: mockProfiles,
+    maxParticipants: 6,
+    visibility: ['anyone'],
+    ageRange: {
+      min: 21,
+      max: 35,
+    }
    },
 ];

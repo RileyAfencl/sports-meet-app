@@ -23,8 +23,8 @@ export function SearchPostingCard({
 
   const participantText =
   posting.maxParticipants === null
-    ? `${posting.currentParticipants}/∞`
-    : `${posting.currentParticipants}/${posting.maxParticipants}`;
+    ? `${posting.participants.length}/∞`
+    : `${posting.participants.length}/${posting.maxParticipants}`;
 
   return (
   <Pressable style={styles.card} onPress={onPress}>

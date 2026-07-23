@@ -1,12 +1,26 @@
-import { Pressable, StyleSheet, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { router } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, StyleSheet, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignIn = () => {
+    const payload = {
+      email: email.trim(),
+      password,
+    };
+
+    console.log('Sign In Payload:', payload);
+
+    // TODO:
+    // await api.signIn(payload);
+  };
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -16,20 +30,24 @@ export default function LoginScreen() {
           </ThemedText>
 
           <TextInput
-          style={styles.input}
-          
-          placeholder="Email"
-          placeholderTextColor="#888"
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#888"
+            value={email}
+            onChangeText={setEmail}
           />
 
           <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#888"
-          secureTextEntry
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#888"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           />
 
-          <Pressable style={styles.signInButton}>
+          <Pressable style={styles.signInButton}
+                     onPress={handleSignIn}>
             <ThemedText style={styles.signInButtonText}>
               Sign In
             </ThemedText>
@@ -60,7 +78,7 @@ const styles = StyleSheet.create({
   signInButton: {
   alignSelf: 'center',
   borderWidth: 1,
-  borderColor: '#fff',
+  borderColor: '#000000',
   borderRadius: 8,
   paddingHorizontal: 32,
   paddingVertical: 12,
@@ -91,7 +109,7 @@ const styles = StyleSheet.create({
   paddingHorizontal: 14,
   paddingVertical: 12,
   fontSize: 16,
-  color: '#fff',
+  color: '#000000',
   alignSelf: 'stretch',
   },
   title: {
@@ -102,7 +120,7 @@ const styles = StyleSheet.create({
   },
   createAccountButton: {
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: '#000000',
     borderRadius: 8,
     paddingHorizontal: 28,
     paddingVertical: 10,

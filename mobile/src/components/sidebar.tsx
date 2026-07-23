@@ -101,7 +101,7 @@ if (isCollapsed) {
     <Pressable
       style={[
           styles.navButton,
-          (pathname === '/inbox' || pathname === '/inbox-activity') &&
+          (pathname === '/direct-messages' || pathname === '/posting-chats') &&
           styles.navButtonActive,
       ]}
       onPress={() => setIsInboxOpen(!isInboxOpen)}
@@ -121,9 +121,9 @@ if (isCollapsed) {
         <Pressable
           style={[
             styles.subNavButton,
-            pathname === '/inbox' && styles.navButtonActive,
+            pathname === '/direct-messages' && styles.navButtonActive,
           ]}
-          onPress={() => router.push('/inbox')}
+          onPress={() => router.push('/direct-messages')}
         >
           {!isCollapsed && <ThemedText style={styles.subNavText}>Direct Messages</ThemedText>}
         </Pressable>
@@ -134,11 +134,11 @@ if (isCollapsed) {
         <Pressable
           style={[
             styles.subNavButton,
-            pathname === '/inbox-activity' && styles.navButtonActive,
+            pathname === '/posting-chats' && styles.navButtonActive,
           ]}
-          onPress={() => router.push('/inbox-activity')}
+          onPress={() => router.push('/posting-chats')}
         >
-          {!isCollapsed && <ThemedText style={styles.subNavText}>Activity Chats</ThemedText>}
+          {!isCollapsed && <ThemedText style={styles.subNavText}>Posting Chats</ThemedText>}
         </Pressable>
       </ThemedView>
     </ThemedView>
@@ -164,7 +164,7 @@ sidebar: {
   top: 0,
   left: 0,
   bottom: 0,
-  width: '42%',
+  width: '45%',
   zIndex: 100,
   position: 'absolute',
   borderRightWidth: 1,
@@ -219,9 +219,9 @@ subNavRow: {
   alignItems: 'center',
 },
 subNavConnector: {
-  width: 20,
+  width: 10,
   height: 3,
-  backgroundColor: '#e6dbdb',
+  backgroundColor: '#020000',
   marginRight: 2,
 },
 floatingOpenButton: {

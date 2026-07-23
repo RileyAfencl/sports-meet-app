@@ -5,6 +5,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { activityOptions } from '@/constants/activity-options';
 import { Spacing } from '@/constants/theme';
+import { mockProfiles } from '@/mock-data/mock-profiles';
 import type { Profile } from '@/types/profile';
 import { Sex, VisibilityPreference } from '@/types/sex';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
@@ -33,52 +34,6 @@ const currentUserActivities = [
 
 const currentUserTimes = ['Afternoon', 'Evening']
 
-
-const mockProfiles: Profile[] = [
-  {
-    id: '1',
-    firstName: 'John',
-    lastInitial: 'F',
-    age: 27,
-    sex: 'male',
-    activities: [ 'Lifting',
-                  'Running',
-                  'Pickleball',
-                  'Hiking',
-                  'Basketball',
-                  'Swimming',
-                  'Golf',
-                ],
-    preferredTimes: ['Morning', 'Evening'],
-    visibilityPreferences: ['anyone'],
-    distanceMiles: 2.3,
-    aboutMe:
-      'I am looking for consistent activity partners who are reliable, easygoing, and interested in getting outside or training a few times a week. I usually prefer weekday evenings and weekends, and I am open to both casual sessions and more structured workouts depending on the activity. xxxxxxxxxxxxxxx',
-    matchCount: 2,
-  },
-  {
-    id: '2',
-    firstName: 'Sarah',
-    lastInitial: 'M',
-    age: 24,
-    sex: 'female',
-    activities: ['Pickleball', 'Hiking'],
-    visibilityPreferences: ['female'],
-    distanceMiles: 4.7,
-    preferredTimes: ['Any'],
-  },
-  {
-    id: '3',
-    firstName: 'Alex',
-    lastInitial: 'T',
-    age: 31,
-    sex: 'other',
-    activities: ['Lifting', 'Basketball'],
-    preferredTimes: ['Any'],
-    distanceMiles: 8.2,
-    visibilityPreferences: ['other'],
-  },
-];
 
 export default function HomeScreen() {
     const [activitySearch, setActivitySearch] = useState('');

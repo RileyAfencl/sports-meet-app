@@ -9,10 +9,10 @@ export const sexOptions: Sex[] = [
 ];
 
 export const postingVisibilityOptions: VisibilityPreference[] = [
+  'anyone',
   'male',
   'female',
   'other',
-  'anyone',
 ];
 
 export const sexLabels: Record<Sex, string> = {
