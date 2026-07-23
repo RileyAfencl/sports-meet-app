@@ -2,6 +2,10 @@
 
 A full-stack application for organizing recreational activities and connecting people through shared interests.
 
+| Discover Page | Posting Board |
+| :-----------: | :-----------: |
+| ![Discover Page](/assets/discover_page.png) | ![Posting Board](/assets/posting_board.png)
+
 ## Overview
 
 Squad Up is a mobile application designed to help people discover partners for recreational activities and organize small group events based on shared interests, availability, and safety-focused communication preferences.
