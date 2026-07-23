@@ -1,8 +1,8 @@
-# Sports Meet App
+# Squad Up App
 
 ## Executive Summary
 
-Sports Meet (working title) is a mobile app that is designed to help users discover partners for activities, and small group events through shared interests, availability and safety-first communication preferences. 
+Squad Up is a mobile app that is designed to help users discover partners for activities, and small group events through shared interests, availability and safety-first communication preferences. 
 
 The platform facilitates these connections by allowing users to create a personal profile, discover other users of similar interests, create and join activity postings and communicate between individuals via direct messaging or activity-based chats. 
 
