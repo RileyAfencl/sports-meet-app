@@ -176,8 +176,10 @@ Remaining V1 validation and edge cases
 This pass makes the product functionally complete for launch.
 
 #### Frontend Pass 2 - Specific Items
--Date/time setup for postings page.
--Maps integration for location on postings page. 
+- Date/time setup for postings page.
+- Maps integration for location on postings page. 
+- Photo Upload for Create profile. 
+- Change Last Name presentation, to pull last_name.first.
 
 ### Frontend Pass 3 — Visual polish
 
@@ -193,3 +195,14 @@ Animations
 Responsive/device testing
 Accessibility and touch-target review
 Final consistency pass
+
+### ERD Notes
+Rule: A posting creator cannot join their own posting. 
+In rails: 
+validate :profile_cannot_be_posting_creator
+
+def profile_cannot_be_posting_creator
+  if profile_id == posting.creator_profile_id
+    errors.add(:profile_id, "cannot join their own posting")
+  end
+end
