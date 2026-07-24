@@ -17,7 +17,7 @@ This directory contains the database architecture for the Squad Up V1 applicatio
 
 ### Entity Relationship Diagram 
 
-![ERD](erd_v1.png)
+![ERD](erd_v1.PNG)
 
 ### DBML Source
 
