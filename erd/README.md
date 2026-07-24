@@ -82,7 +82,7 @@ def sender_must_be_posting_chat_participant
 end
 ```
 
-Major Query Pages
+### Major Query Pages
 
 - Discover
 - Posting Board
