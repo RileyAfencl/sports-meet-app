@@ -54,7 +54,8 @@ A posting-chat participant is a profile that has opted into the chat associated 
 ### Notes
 
 Rule: A posting creator cannot join their own posting. 
-In rails: 
+In rails:
+```
 validate :profile_cannot_be_posting_creator
 
 def profile_cannot_be_posting_creator
@@ -62,9 +63,10 @@ def profile_cannot_be_posting_creator
     errors.add(:profile_id, "cannot join their own posting")
   end
 end
-
+```
 Rule: A profile may only send a posting chat message if they are currently a participant in that posting chat.
 In Rails:
+```
 validate :sender_must_be_posting_chat_participant
 
 def sender_must_be_posting_chat_participant
@@ -78,7 +80,7 @@ def sender_must_be_posting_chat_participant
     "must be a participant in the posting chat"
   )
 end
-
+```
 
 Major Query Pages
 
