@@ -1,0 +1,149 @@
+Table users {
+  id bigint [pk, increment]
+  email varchar [not null, unique]
+  password_digest varchar [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table profiles {
+  id bigint [pk, increment]
+  user_id bigint [not null, unique]
+  first_name varchar [not null]
+  last_name varchar [not null]
+  sex int [not null]
+  profile_photo_key varchar
+  visibility_preference int [not null]
+  availability_preference int [not null]
+  about_me text
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Ref: profiles.user_id - users.id
+
+Table activities {
+  id bigint [pk, increment]
+  name varchar [not null, unique]
+
+}
+
+Table profile_activities {
+  id bigint [pk, increment]
+  profile_id bigint [not null]
+  activity_id bigint [not null]
+
+  indexes {
+    (profile_id, activity_id) [unique]
+  }
+}
+
+Ref: profile_activities.profile_id > profiles.id
+Ref: profile_activities.activity_id > activities.id
+
+Table postings {
+  id bigint [pk, increment]
+  creator_profile_id bigint [not null]
+  activity_id bigint [not null]
+  title varchar [not null]
+  description text
+
+  starts_at timestamp [not null]
+
+  location_name varchar [not null]
+  location_address varchar
+
+  participant_visibility int [not null]
+  participant_age_min int
+  participant_age_max int
+  participant_limit int
+
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Ref: postings.creator_profile_id > profiles.id
+Ref: postings.activity_id > activities.id
+
+
+Table posting_participants {
+  id bigint [pk, increment]
+  posting_id bigint [not null]
+  profile_id bigint [not null]
+
+  indexes {
+    (posting_id, profile_id) [unique]
+  }
+}
+
+Ref: posting_participants.posting_id > postings.id
+Ref: posting_participants.profile_id > profiles.id
+
+Table direct_message_conversations {
+  id bigint [pk, increment]
+  profile_one_id bigint [not null]
+  profile_two_id bigint [not null]
+
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  indexes {
+    (profile_one_id, profile_two_id) [unique]
+  }
+}
+
+Ref: direct_message_conversations.profile_one_id > profiles.id
+Ref: direct_message_conversations.profile_two_id > profiles.id
+
+
+Table direct_messages {
+  id bigint [pk, increment]
+
+  direct_message_conversation_id bigint [not null]
+  sender_profile_id bigint [not null]
+
+  body text [not null]
+
+  sent_at timestamp [not null]
+}
+
+Ref: direct_messages.direct_message_conversation_id > direct_message_conversations.id
+Ref: direct_messages.sender_profile_id > profiles.id
+
+Table posting_chats {
+  id bigint [pk, increment]
+  posting_id bigint [not null, unique]
+
+}
+
+Ref: posting_chats.posting_id - postings.id
+
+Table posting_chat_participants {
+  id bigint [pk, increment]
+
+  posting_chat_id bigint [not null]
+  profile_id bigint [not null]
+
+  indexes {
+    (posting_chat_id, profile_id) [unique]
+  }
+}
+
+Ref: posting_chat_participants.posting_chat_id > posting_chats.id
+Ref: posting_chat_participants.profile_id > profiles.id
+
+Table posting_chat_messages {
+  id bigint [pk, increment]
+
+  posting_chat_id bigint [not null]
+  sender_profile_id bigint [not null]
+
+  body text [not null]
+  sent_at timestamp [not null]
+}
+
+Ref: posting_chat_messages.posting_chat_id > posting_chats.id
+Ref: posting_chat_messages.sender_profile_id > profiles.id
+
+
+
