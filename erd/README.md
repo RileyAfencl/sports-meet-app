@@ -21,7 +21,7 @@ This directory contains the database architecture for the Squad Up V1 applicatio
 
 ### DBML Source
 
-- [erd_v1.dbml](erd_v1.dbml)
+- [erd_v1.dbml](erd_v1_code.dbml)
 
 ### Entity Definitions
 
