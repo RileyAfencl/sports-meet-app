@@ -32,13 +32,13 @@ A user has exactly one profile. The `users` table stores authentication and vali
 A profile represents the user throughout the application and serves as the user-facing entity referenced by other domain tables.
 
 **Posting:**  
-A posting is a scheduled event created by one profile. A posting may be joined by many non-creator profiles and belongs to exactly one activity.
+A posting is a scheduled event created by one profile. A posting may be joined by many profiles and belongs to exactly one activity.
 
 **Activity:**  
 An activity is a catalog item representing something a profile may be interested in. A profile may select many activities, while each posting belongs to exactly one activity.
 
 **Posting Participant:**  
-A posting participant is a non-creator profile that has joined a posting. A profile may join many postings, and a posting may have many participants.
+A posting participant is a profile that is attending a posting. A profile may join many postings, and a posting may have many participants. A posting creator by default is a posting participant. 
 
 **Direct Message Conversation:**  
 A direct-message conversation connects exactly two distinct profiles. Only one conversation may exist for any pair of profiles.
@@ -49,21 +49,10 @@ The profile pair must be treated as unordered. For example, `(7, 19)` and `(19, 
 A posting chat belongs to exactly one posting, and each posting may have only one posting chat. The posting creator is automatically included in the posting chat. Non-creator posting participants may opt into the chat.
 
 **Posting Chat Participant:**  
-A posting-chat participant is a profile that has opted into the chat associated with a posting. A non-creator profile must already be a participant in the posting before joining its posting chat. The posting creator is automatically included in the posting chat.
+A posting-chat participant is a profile that has opted into the chat associated with a posting. A posting-chat participant must be attending the posting. The posting creator by default is a posting chat participant. 
 
 ### Notes
 
-Rule: A posting creator cannot join their own posting. 
-In rails:
-```
-validate :profile_cannot_be_posting_creator
-
-def profile_cannot_be_posting_creator
-  if profile_id == posting.creator_profile_id
-    errors.add(:profile_id, "cannot join their own posting")
-  end
-end
-```
 Rule: A profile may only send a posting chat message if they are currently a participant in that posting chat.
 In Rails:
 ```
