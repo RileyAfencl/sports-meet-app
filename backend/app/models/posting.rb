@@ -29,6 +29,11 @@ class Posting < ApplicationRecord
 
   def create_default_associations
     posting_participants.create!(profile: creator_profile)
-    create_posting_chat!
+  
+    chat = create_posting_chat!
+  
+    chat.posting_chat_participants.create!(
+      profile: creator_profile
+    )
   end
 end
