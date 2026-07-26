@@ -180,6 +180,8 @@ This pass makes the product functionally complete for launch.
 - Maps integration for location on postings page. 
 - Photo Upload for Create profile. 
 - Change Last Name presentation, to pull last_name.first.
+- Need to rewrite posting/create and all modals to reflect new rule: Creator is considered a participant by default.
+- Look at cascade/deletion behavior and determine policy.
 
 ### Frontend Pass 3 — Visual polish
 
