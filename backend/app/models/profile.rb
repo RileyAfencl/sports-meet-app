@@ -5,6 +5,27 @@ class Profile < ApplicationRecord
 
   has_many :profile_activities, dependent: :destroy
   has_many :activities, through: :profile_activities
+  has_many :created_postings, class_name: "Posting", foreign_key: :creator_profile_id, dependent: :destroy
+  has_many :posting_participants, dependent: :destroy
+  has_many :postings, through: :posting_participants
+  has_many :posting_chat_participants, dependent: :destroy
+  has_many :posting_chats, through: :posting_chat_participants
+  has_many :sent_posting_chat_messages,
+           class_name: "PostingChatMessage",
+           foreign_key: :sender_profile_id,
+           dependent: :destroy
+  has_many :direct_message_conversations_as_one,
+           class_name: "DirectMessageConversation",
+           foreign_key: :profile_one_id,
+           dependent: :destroy
+  has_many :direct_message_conversations_as_two,
+           class_name: "DirectMessageConversation",
+           foreign_key: :profile_two_id,
+           dependent: :destroy
+  has_many :sent_direct_messages,
+           class_name: "DirectMessage",
+           foreign_key: :sender_profile_id,
+           dependent: :destroy
 
   enum :availability_preference, {
     any: 0,
