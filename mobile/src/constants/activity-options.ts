@@ -11,4 +11,5 @@ export const activityOptions = [
   'Golf',
   'Tennis',
   'Disc Golf',
+  'Swimming',
 ];

@@ -3,6 +3,8 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Profile } from '@/types/profile';
 import { sexInitials } from '@/types/sex';
+import { calculateAge } from '@/utils/calculate-age';
+import { first } from '@/utils/first';
 import { Modal, Pressable, ScrollView, StyleSheet, } from 'react-native';
 
 type ViewParticipantsModalProps = {
@@ -82,9 +84,9 @@ export function ViewParticipantsModal({
                     <ThemedView style={styles.participantInfo}>
                         <ThemedText style={styles.participantName}>
                         {participant.firstName}{' '}
-                        {participant.lastInitial}. -{' '}
+                        {first(participant.lastName)}. -{' '}
                         {sexInitials[participant.sex]},{' '}
-                        {participant.age}
+                        {calculateAge(participant.dateOfBirth)}
                         </ThemedText>
 
                         <ThemedText

@@ -6,8 +6,14 @@ import { ThemedView } from '@/components/themed-view';
 import { activityOptions } from '@/constants/activity-options';
 import { Spacing } from '@/constants/theme';
 import { mockProfiles } from '@/mock-data/mock-profiles';
+import {
+  currentUserActivities,
+  currentUserSex,
+  currentUserTimes,
+  currentUserVisibilityPreferences,
+} from '@/mock-data/mock-current-user';
 import type { Profile } from '@/types/profile';
-import { Sex, VisibilityPreference } from '@/types/sex';
+import { calculateAge } from '@/utils/calculate-age';
 import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import Slider from '@react-native-community/slider';
 import { useState } from 'react';
@@ -19,21 +25,6 @@ const timeOptions = [
     'Afternoon',
     'Evening',   
 ]
-
-const currentUserSex: Sex = 'other';
-
-const currentUserVisibilityPreferences: VisibilityPreference[] = [
-  'anyone',
-];
-
-const currentUserActivities = [
-  'Lifting',
-  'Hiking',
-  'Pickleball'
-]
-
-const currentUserTimes = ['Afternoon', 'Evening']
-
 
 export default function HomeScreen() {
     const [activitySearch, setActivitySearch] = useState('');
@@ -108,8 +99,8 @@ export default function HomeScreen() {
           profile.distanceMiles <= radius;
 
         const matchesAge =
-          profile.age >= ageRange[0] &&
-          profile.age <= ageRange[1];
+          calculateAge(profile.dateOfBirth) >= ageRange[0] &&
+          calculateAge(profile.dateOfBirth) <= ageRange[1];
 
         return (
           userCanViewProfile &&

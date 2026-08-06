@@ -1,3 +1,7 @@
+import {
+  buildSearchDateRange,
+  searchPostings,
+} from '@/api/search-postings';
 import { DateRangePicker } from '@/components/daterangepicker';
 import { JoinPostingModal } from '@/components/join-posting-modal';
 import { SearchPostingCard } from '@/components/search-posting-card';
@@ -9,27 +13,18 @@ import { ThemedView } from '@/components/themed-view';
 import { ViewParticipantsModal } from '@/components/view-participants-modal';
 import { activityOptions } from '@/constants/activity-options';
 import { Spacing } from '@/constants/theme';
-import { mockPostings } from '@/mock-data/mock-postings';
-import { mockProfiles } from '@/mock-data/mock-profiles';
 import { Posting } from '@/types/posting';
 import { Profile } from '@/types/profile';
-import { Sex } from '@/types/sex';
 import { Ionicons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const currentUserAge = 27;
- 
-const currentUserSex: Sex = 'male';
-
-const mockParticipants: Profile [] = mockProfiles;
 
 export default function PostingsScreen() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [joinedPostingIds, setJoinedPostingIds] = useState<string[]>([]);
+  const [joinedPostingIds, setJoinedPostingIds] = useState<number[]>([]);
   
   const [activitySearch, setActivitySearch] = useState('');
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
@@ -48,6 +43,9 @@ export default function PostingsScreen() {
   const [radius, setRadius] = useState(5);
 
   const [hasSearched, setHasSearched] = useState(false);
+  const [searchResults, setSearchResults] = useState<Posting[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const [selectedPosting, setSelectedPosting] = useState<Posting | null>(null);
   const [showParticipants, setShowParticipants] = useState(false);
@@ -59,64 +57,34 @@ export default function PostingsScreen() {
   selectedPosting !== null &&
   joinedPostingIds.includes(selectedPosting.id);
 
-  const filteredPostings = mockPostings
-  .filter((posting) => {
-    const isNotFull =
-      posting.maxParticipants === null ||
-      posting.participants.length < posting.maxParticipants;
+  const filteredPostings = searchResults;
 
-  const matchesActivity =
-    selectedActivities.includes(posting.activity);
+  const handleSearch = async () => {
+    if (selectedActivities.length === 0) {
+      setSearchError('Select at least one activity.');
+      return;
+    }
 
-  const matchesRadius =
-      posting.distanceMiles <= radius;
-
-  const postingDate = posting.dateTime.getTime();
-
-  const matchesStartDate =
-    startDate === null ||
-    postingDate >= startDate.getTime();
-  
-  const matchesEndDate =
-    endDate === null ||
-    postingDate <= endDate.getTime();
-
-  const userIsAgeEligible =
-  currentUserAge >= posting.ageRange.min &&
-  currentUserAge <= posting.ageRange.max;
-
-  const userIsVisibilityEligible =
-  posting.visibility.includes('anyone') ||
-  posting.visibility.includes(currentUserSex);
-
-  return (
-      isNotFull &&
-      userIsAgeEligible &&
-      userIsVisibilityEligible &&
-      matchesActivity &&
-      matchesRadius &&
-      matchesStartDate &&
-      matchesEndDate
-    );
-  })
-  .sort(
-    (a, b) =>
-      a.dateTime.getTime() - b.dateTime.getTime()
-  );
-
-  const handleSearch = () => {
-    const searchPayload = {
-      activities: selectedActivities,
-      radiusMiles: radius,
-      dateRange: {
-        start: startDate?.toISOString() ?? null,
-        end: endDate?.toISOString() ?? null,
-      },
-    };
-
+    setIsSearching(true);
+    setSearchError(null);
     setExpandedActivities([]);
-    console.log(searchPayload);
-    setHasSearched(true);
+
+    try {
+      const results = await searchPostings({
+        activities: selectedActivities,
+        radius_miles: radius,
+        date_range: buildSearchDateRange(startDate, endDate),
+      });
+
+      setSearchResults(results);
+      setHasSearched(true);
+    } catch (error) {
+      setSearchError(
+        error instanceof Error ? error.message : 'Search failed'
+      );
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   const postingsByActivity = filteredPostings.reduce<
@@ -232,15 +200,26 @@ export default function PostingsScreen() {
           <Pressable
             style={[
               styles.searchButton,
-              hasSearched && styles.buttonDisabled,
+              (hasSearched || isSearching || selectedActivities.length === 0) &&
+                styles.buttonDisabled,
             ]}
-            disabled={hasSearched}
+            disabled={
+              hasSearched || isSearching || selectedActivities.length === 0
+            }
             onPress={handleSearch}
           >
-            <ThemedText style={styles.searchButtonText}>
-              {hasSearched ? 'Results Showing' : 'Search Postings'}
-            </ThemedText>
+            {isSearching ? (
+              <ActivityIndicator color="#000" />
+            ) : (
+              <ThemedText style={styles.searchButtonText}>
+                {hasSearched ? 'Results Showing' : 'Search Postings'}
+              </ThemedText>
+            )}
           </Pressable>
+
+          {searchError && (
+            <ThemedText style={styles.errorText}>{searchError}</ThemedText>
+          )}
 
           {hasSearched && (
             <ThemedView>
@@ -253,6 +232,8 @@ export default function PostingsScreen() {
                   style={styles.clearResultsButton}
                   onPress={() => {
                     setHasSearched(false);
+                    setSearchResults([]);
+                    setSearchError(null);
                     setExpandedActivities([]);
                   }}
                 >
@@ -342,9 +323,7 @@ export default function PostingsScreen() {
       />
 
       <ViewParticipantsModal
-        participants={
-          selectedPosting?.participants ?? mockParticipants
-        }
+        participants={selectedPosting?.participants ?? []}
         visible={showParticipants}
         onClose={() => setShowParticipants(false)}
         onParticipantPress={(participant) => {
@@ -529,6 +508,12 @@ optionButtonText: {
 },
 buttonDisabled: {
   opacity: 0.5,
+},
+errorText: {
+  marginTop: 12,
+  fontSize: 14,
+  color: '#b00020',
+  textAlign: 'center',
 },
 radiusHeader: {
   flexDirection: 'row',

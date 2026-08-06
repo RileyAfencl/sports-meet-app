@@ -2,6 +2,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Posting } from '@/types/posting';
 import { postingVisibilityLabels } from '@/types/sex';
+import { getParticipantCount } from '@/utils/posting-participants';
 import { Pressable, StyleSheet } from 'react-native';
 
 type SearchPostingCardProps = {
@@ -21,10 +22,11 @@ export function SearchPostingCard({
     minute: '2-digit',
   });
 
+  const participantCount = getParticipantCount(posting);
   const participantText =
-  posting.maxParticipants === null
-    ? `${posting.participants.length}/∞`
-    : `${posting.participants.length}/${posting.maxParticipants}`;
+    posting.maxParticipants == null
+      ? `${participantCount}/∞`
+      : `${participantCount}/${posting.maxParticipants}`;
 
   return (
   <Pressable style={styles.card} onPress={onPress}>
@@ -37,9 +39,11 @@ export function SearchPostingCard({
         {formattedDateTime}
       </ThemedText>
 
-      <ThemedText style={styles.metaText}>
-        {posting.distanceMiles.toFixed(1)} mi
-      </ThemedText>
+      {posting.distanceMiles !== undefined && (
+        <ThemedText style={styles.metaText}>
+          {posting.distanceMiles.toFixed(1)} mi
+        </ThemedText>
+      )}
 
       <ThemedText style={styles.metaText}>
             {' '}

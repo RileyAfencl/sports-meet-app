@@ -179,9 +179,11 @@ This pass makes the product functionally complete for launch.
 - Date/time setup for postings page.
 - Maps integration for location on postings page. 
 - Photo Upload for Create profile. 
-- Change Last Name presentation, to pull last_name.first.
+- Change Last Name presentation, to pull last_name.first. [complete]
 - Need to rewrite posting/create and all modals to reflect new rule: Creator is considered a participant by default.
 - Look at cascade/deletion behavior and determine policy.
+- Data Range on Postings.tsx should have a default.
+- Build out geocoding functionality so search radius becomes an active filter, currently inactive. 
 
 ### Frontend Pass 3 — Visual polish
 

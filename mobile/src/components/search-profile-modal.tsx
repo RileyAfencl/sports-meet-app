@@ -5,13 +5,12 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Profile } from '@/types/profile';
 import { sexInitials } from '@/types/sex';
+import { calculateAge } from '@/utils/calculate-age';
 
 type SearchProfileModalProps = {
   profile: Profile | null;
   onClose: () => void;
 };
-
-
 
 export function SearchProfileModal({
   profile,
@@ -21,10 +20,7 @@ export function SearchProfileModal({
     return null;
   }
 
-  const preferredTimesText =
-  profile.preferredTimes?.length === 3
-    ? 'Any'
-    : profile.preferredTimes?.join(', ') || 'No preferred times listed.';
+  const preferredTimesText = profile.preferredTimes.join(", ")
 
   return (
     <Modal transparent animationType="fade" visible={!!profile}>
@@ -40,7 +36,7 @@ export function SearchProfileModal({
               <ThemedText style={styles.photoText}>Photo</ThemedText>
             </ThemedView>
             <ThemedText style={styles.nameText}>
-             {profile.firstName} {profile.lastInitial}. - {sexInitials[profile.sex]}, {profile.age}
+             {profile.firstName} {profile.lastName} - {sexInitials[profile.sex]}, {calculateAge(profile.dateOfBirth)}
             </ThemedText>
 
             {profile.distanceMiles !== undefined && (

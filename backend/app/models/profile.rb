@@ -51,6 +51,17 @@ class Profile < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :sex, presence: true, inclusion: { in: SEX_OPTIONS }
+  validates :date_of_birth, presence: true
   validates :visibility_preference, presence: true
   validates :availability_preference, presence: true
+
+  def age
+    return nil if date_of_birth.blank?
+
+    today = Date.current
+    age = today.year - date_of_birth.year
+    age -= 1 if today < date_of_birth.change(year: today.year)
+
+    age
+  end
 end

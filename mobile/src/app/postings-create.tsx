@@ -87,7 +87,7 @@ export default function PostingsCreate() {
             maxParticipants !== null &&
             (
                 !Number.isInteger(maxParticipants) ||
-                maxParticipants < 1
+                maxParticipants < 2
             )
         ) {
             console.log(

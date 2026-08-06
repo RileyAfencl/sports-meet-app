@@ -2,15 +2,16 @@ import type { VisibilityPreference } from '@/types/sex';
 import type { Profile } from './profile';
 
 export type Posting = {
-  id: string;
+  id: number;
   title: string;
   activity: string;
   dateTime: Date;
-  distanceMiles: number;
+  distanceMiles?: number;
   locationName: string;
   description?: string;
   creator: Profile;
   participants: Profile[];
+  participantCount?: number;
   maxParticipants: number | null;
   visibility: VisibilityPreference[];
   ageRange: {

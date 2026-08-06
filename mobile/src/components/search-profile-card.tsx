@@ -5,6 +5,8 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Profile } from '@/types/profile';
 import { sexInitials } from '@/types/sex';
+import { calculateAge } from '@/utils/calculate-age';
+import { first } from '@/utils/first';
 
 type SearchProfileCardProps = {
   profile: Profile;
@@ -19,7 +21,7 @@ export function SearchProfileCard({ profile, onPress }: SearchProfileCardProps) 
       </ThemedView>
 
       <ThemedText style={styles.nameText}>
-        {profile.firstName} {profile.lastInitial}. - {sexInitials[profile.sex]}, {profile.age}
+        {profile.firstName} {first(profile.lastName)}. - {sexInitials[profile.sex]}, {calculateAge(profile.dateOfBirth)}
       </ThemedText>
 
       <ThemedText style={styles.matchText}>

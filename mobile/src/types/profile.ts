@@ -1,10 +1,11 @@
 import type { Sex, VisibilityPreference } from '@/types/sex';
 
 export type Profile = {
-  id: string;
+  id: number;
+  userId: number;
   firstName: string;
-  lastInitial: string;
-  age: number;
+  lastName: string;
+  dateOfBirth: string;
   sex: Sex;
   activities: string[];
   preferredTimes: string[];

@@ -5,6 +5,9 @@ import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import type { Posting } from '@/types/posting';
 import { postingVisibilityLabels, sexInitials } from '@/types/sex';
+import { calculateAge } from '@/utils/calculate-age';
+import { first } from '@/utils/first';
+import { getParticipantCount } from '@/utils/posting-participants';
 
 type SearchPostingModalProps = {
   posting: Posting | null;
@@ -43,10 +46,11 @@ export function SearchPostingModal({
     .map((value) => postingVisibilityLabels[value])
     .join(', ');
 
+  const participantCount = getParticipantCount(posting);
   const participantText =
-    posting.maxParticipants === null
-      ? `${posting.participants.length} joined, no participant limit`
-      : `${posting.participants.length} of ${posting.maxParticipants} spots filled`;
+    posting.maxParticipants == null
+      ? `${participantCount}/∞ joined, no participant limit`
+      : `${participantCount} of ${posting.maxParticipants} spots filled`;
 
   const participants = posting.participants ?? [];
 
@@ -87,9 +91,9 @@ export function SearchPostingModal({
                   >
                   <ThemedText style={styles.creatorName}>
                         {posting.creator.firstName}{' '}
-                        {posting.creator.lastInitial}. -{' '}
+                        {first(posting.creator.lastName)}. -{' '}
                         {sexInitials[posting.creator.sex]},{' '}
-                        {posting.creator.age}
+                        {calculateAge(posting.creator.dateOfBirth)}
                   </ThemedText>
                   </Pressable>
               </ThemedView>
@@ -103,9 +107,11 @@ export function SearchPostingModal({
                 Time: {formattedTime}
               </ThemedText>
 
-              <ThemedText style={styles.detailText}>
-                Distance: {posting.distanceMiles.toFixed(1)} miles
-              </ThemedText>
+              {posting.distanceMiles !== undefined && (
+                <ThemedText style={styles.detailText}>
+                  Distance: {posting.distanceMiles.toFixed(1)} miles
+                </ThemedText>
+              )}
 
               <ThemedText style={styles.detailText}>
                 Location: {posting.locationName}
