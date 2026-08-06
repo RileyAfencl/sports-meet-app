@@ -78,10 +78,10 @@ A Vue 3 web client is also being developed to share the same backend and busines
 - [x] Front-end screen designs
 - [x] User flows & navigation
 - [x] Database design
-- [ ] Ruby on Rails backend
-- [ ] REST API
+- [x] Ruby on Rails backend
+- [x] REST API
 - [ ] Authentication
-- [ ] React Native application
+- [x] React Native application
 - [ ] Vue 3 web application
 - [ ] Messaging system
 - [ ] Testing
