@@ -1,5 +1,7 @@
 # Squad Up
 
+[View Website](https://squaduplanding.netlify.app/)
+
 A full-stack application for organizing recreational activities and connecting people through shared interests.
 
 | Discover Page | Posting Board |
