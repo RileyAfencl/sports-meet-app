@@ -9,10 +9,7 @@ import HeroSection from '@/components/HeroSection.vue'
     <div
       class="paint-stroke"
       aria-hidden="true"
-      :style="{
-        maskImage: `url(${paintStrokeUrl})`,
-        webkitMaskImage: `url(${paintStrokeUrl})`,
-      }"
+      :style="{ '--stroke-mask': `url(${paintStrokeUrl})` }"
     ></div>
     <HeroSection />
     <FeaturesSection />
@@ -37,8 +34,13 @@ import HeroSection from '@/components/HeroSection.vue'
     #a8ffae,
     #6aff9c
   );
+  -webkit-mask-image: var(--stroke-mask);
+  mask-image: var(--stroke-mask);
+  -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
+  -webkit-mask-position: 46% center;
   mask-position: 46% center;
+  -webkit-mask-size: 120% 125%;
   mask-size: 120% 125%;
 }
 
