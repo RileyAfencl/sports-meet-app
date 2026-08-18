@@ -8,7 +8,7 @@ The platform facilitates these connections by allowing users to create a persona
 
 ## Product Vision
 
-Sports Meet exists to reduce the friction involved in finding activity partners and organizing groups for casual recreational activities.
+Squad Up exists to reduce the friction involved in finding activity partners and organizing groups for casual recreational activities.
 
 The platform focuses on facilitating introductions and activity coordination rather than functioning as a traditional social media platform. The goal is to help users move from discovery to real-world interaction as efficiently and safely as possible.
 
