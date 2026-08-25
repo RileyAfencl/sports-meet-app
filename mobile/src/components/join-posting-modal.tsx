@@ -1,4 +1,4 @@
-import { Modal, Pressable, StyleSheet, } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, StyleSheet, } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -9,6 +9,8 @@ type JoinPostingModalProps = {
   posting: Posting | null;
   visible: boolean;
   joinPostingChat: boolean;
+  isJoining: boolean;
+  error: string | null;
   onJoinPostingChatChange: (value: boolean) => void;
   onCancel: () => void;
   onConfirm: () => void;
@@ -18,6 +20,8 @@ export function JoinPostingModal({
   posting,
   visible,
   joinPostingChat,
+  isJoining,
+  error,
   onJoinPostingChatChange,
   onCancel,
   onConfirm,
@@ -59,6 +63,7 @@ export function JoinPostingModal({
 
           <Pressable
             style={styles.chatOption}
+            disabled={isJoining}
             onPress={() =>
               onJoinPostingChatChange(!joinPostingChat)
             }
@@ -88,9 +93,14 @@ export function JoinPostingModal({
             </ThemedView>
           </Pressable>
 
+          {error && (
+            <ThemedText style={styles.errorText}>{error}</ThemedText>
+          )}
+
           <ThemedView style={styles.buttonRow}>
             <Pressable
               style={styles.cancelButton}
+              disabled={isJoining}
               onPress={onCancel}
             >
               <ThemedText style={styles.cancelButtonText}>
@@ -99,12 +109,20 @@ export function JoinPostingModal({
             </Pressable>
 
             <Pressable
-              style={styles.confirmButton}
+              style={[
+                styles.confirmButton,
+                isJoining && styles.confirmButtonDisabled,
+              ]}
+              disabled={isJoining}
               onPress={onConfirm}
             >
-              <ThemedText style={styles.confirmButtonText}>
-                Confirm
-              </ThemedText>
+              {isJoining ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <ThemedText style={styles.confirmButtonText}>
+                  Confirm
+                </ThemedText>
+              )}
             </Pressable>
           </ThemedView>
         </ThemedView>
@@ -220,5 +238,14 @@ confirmButtonText: {
     fontSize: 14,
     fontWeight: '800',
     color: '#fff',
+},
+confirmButtonDisabled: {
+    opacity: 0.6,
+},
+errorText: {
+    marginTop: 16,
+    color: '#b00020',
+    fontSize: 13,
+    fontWeight: '600',
 },
 });

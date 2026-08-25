@@ -1,8 +1,9 @@
 class PostingSerializer
   VISIBILITY_TO_PREFERENCES = ProfileSerializer::VISIBILITY_TO_PREFERENCES
 
-  def initialize(posting)
+  def initialize(posting, current_profile: nil)
     @posting = posting
+    @current_profile = current_profile
   end
 
   def as_json
@@ -17,6 +18,7 @@ class PostingSerializer
       participants: ProfileSerializer.collection(non_creator_participants),
       participantCount: participant_count,
       visibility: visibility,
+      joined: joined,
       ageRange: {
         min: posting.participant_age_min,
         max: posting.participant_age_max
@@ -24,13 +26,13 @@ class PostingSerializer
     }.compact.merge(maxParticipants: posting.participant_limit)
   end
 
-  def self.collection(postings)
-    postings.map { |posting| new(posting).as_json }
+  def self.collection(postings, current_profile: nil)
+    postings.map { |posting| new(posting, current_profile: current_profile).as_json }
   end
 
   private
 
-  attr_reader :posting
+  attr_reader :posting, :current_profile
 
   # Matches mock data — creator is shown separately, not in participants list.
   def non_creator_participants
@@ -43,5 +45,11 @@ class PostingSerializer
 
   def visibility
     VISIBILITY_TO_PREFERENCES.fetch(posting.participant_visibility)
+  end
+
+  def joined
+    return false if current_profile.blank?
+
+    posting.posting_participants.exists?(profile_id: current_profile.id)
   end
 end

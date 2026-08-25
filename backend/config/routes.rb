@@ -5,5 +5,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     post "postings/search", to: "postings#search"
+    post "postings/:id/join", to: "postings#join"
   end
 end

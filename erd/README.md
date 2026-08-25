@@ -51,7 +51,7 @@ A posting chat belongs to exactly one posting, and each posting may have only on
 **Posting Chat Participant:**  
 A posting-chat participant is a profile that has opted into the chat associated with a posting. A posting-chat participant must be attending the posting. The posting creator by default is a posting chat participant. 
 
-### Notes
+### Additional Business Rules and Notes
 
 Rule: A profile may only send a posting chat message if they are currently a participant in that posting chat.
 In Rails:
@@ -70,6 +70,22 @@ def sender_must_be_posting_chat_participant
   )
 end
 ```
+
+Rule: A posting creator cannot join their own posting. 
+In rails: 
+```
+validate :profile_cannot_be_posting_creator
+
+def profile_cannot_be_posting_creator
+  if profile_id == posting.creator_profile_id
+    errors.add(:profile_id, "cannot join their own posting")
+  end
+end
+```
+
+Rule: A posting should be returned if it matches the user’s current search filters and either it is normally discoverable or the current user has already joined it.
+
+Rule: Joined status overrides discoverability restrictions like full capacity, but does not override the user’s explicit search criteria.
 
 #### Major Query Pages
 

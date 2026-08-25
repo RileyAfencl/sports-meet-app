@@ -46,14 +46,27 @@ module Postings
     end
 
     def filter_by_capacity(scope)
+      capacity_sql = <<~SQL.squish
+        postings.participant_limit IS NULL OR (
+          SELECT COUNT(*)
+          FROM posting_participants
+          WHERE posting_participants.posting_id = postings.id
+        ) < postings.participant_limit
+      SQL
+
+      return scope.where(capacity_sql) if current_profile.blank?
+
       scope.where(
-        <<~SQL.squish
-          postings.participant_limit IS NULL OR (
-            SELECT COUNT(*)
+        <<~SQL.squish,
+          #{capacity_sql}
+          OR EXISTS (
+            SELECT 1
             FROM posting_participants
             WHERE posting_participants.posting_id = postings.id
-          ) < postings.participant_limit
+              AND posting_participants.profile_id = :profile_id
+          )
         SQL
+        profile_id: current_profile.id
       )
     end
 

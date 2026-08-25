@@ -16,8 +16,49 @@ class Api::PostingsController < ApplicationController
     ).call
 
     render json: {
-      postings: ::PostingSerializer.collection(postings),
+      postings: ::PostingSerializer.collection(postings, current_profile: current_profile),
       filters: filters
+    }
+  end
+
+  def join
+    errors = join_presence_errors + join_chat_value_errors(join_params)
+
+    if errors.any?
+      return render json: { errors: errors }, status: :unprocessable_entity
+    end
+
+    posting = Posting.find(params[:id])
+    join_chat = join_params[:join_chat]
+
+    if posting.posting_participants.exists?(profile: current_profile)
+      return render json: { errors: ["already joined"] }, status: :conflict
+    end
+
+    if posting.participant_limit.present? &&
+        posting.posting_participants.count >= posting.participant_limit
+      return render json: { errors: ["posting is full"] }, status: :unprocessable_entity
+    end
+
+    ActiveRecord::Base.transaction do
+      posting.posting_participants.create!(profile: current_profile)
+
+      if join_chat
+        posting.posting_chat.posting_chat_participants.create!(
+          profile: current_profile
+        )
+      end
+    end
+
+    serialized_posting = Posting
+      .includes(:activity, { creator_profile: :activities }, { participants: :activities })
+      .find(posting.id)
+
+    render json: {
+      posting: ::PostingSerializer.new(
+        serialized_posting,
+        current_profile: current_profile
+      ).as_json
     }
   end
 
@@ -34,6 +75,36 @@ class Api::PostingsController < ApplicationController
       activities: [],
       date_range: [:start, :end]
     )
+  end
+
+  def join_params
+    params.permit(:join_chat)
+  end
+
+  def join_presence_errors
+    errors = []
+
+    unless params.key?(:join_chat) || params.key?("join_chat")
+      errors << "join_chat is required"
+    end
+
+    errors
+  end
+
+  def join_chat_value_errors(join_params)
+    errors = []
+    join_chat = join_params[:join_chat]
+
+    if join_chat.nil?
+      errors << "join_chat cannot be null"
+      return errors
+    end
+
+    unless [true, false].include?(join_chat)
+      errors << "join_chat must be a boolean"
+    end
+
+    errors
   end
 
   def presence_errors

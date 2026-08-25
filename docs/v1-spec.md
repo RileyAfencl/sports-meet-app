@@ -183,7 +183,8 @@ This pass makes the product functionally complete for launch.
 - Need to rewrite posting/create and all modals to reflect new rule: Creator is considered a participant by default.
 - Look at cascade/deletion behavior and determine policy.
 - Data Range on Postings.tsx should have a default.
-- Build out geocoding functionality so search radius becomes an active filter, currently inactive. 
+- Build out geocoding functionality so search radius becomes an active filter, currently inactive.
+- Current state for users has to load from backend current user -> postings joinedpostingsspecifically. 
 
 ### Frontend Pass 3 — Visual polish
 
@@ -200,13 +201,3 @@ Responsive/device testing
 Accessibility and touch-target review
 Final consistency pass
 
-### ERD Notes
-Rule: A posting creator cannot join their own posting. 
-In rails: 
-validate :profile_cannot_be_posting_creator
-
-def profile_cannot_be_posting_creator
-  if profile_id == posting.creator_profile_id
-    errors.add(:profile_id, "cannot join their own posting")
-  end
-end

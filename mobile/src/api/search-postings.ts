@@ -12,7 +12,7 @@ export type SearchPostingsRequest = {
 };
 
 /** Raw posting from JSON — only dateTime differs (ISO string vs Date) */
-type PostingJson = Omit<Posting, 'dateTime'> & {
+export type PostingJson = Omit<Posting, 'dateTime'> & {
   dateTime: string;
 };
 
@@ -20,7 +20,7 @@ type SearchPostingsResponse = {
   postings: PostingJson[];
 };
 
-function parsePosting(raw: PostingJson): Posting {
+export function parsePosting(raw: PostingJson): Posting {
   return {
     ...raw,
     dateTime: new Date(raw.dateTime),

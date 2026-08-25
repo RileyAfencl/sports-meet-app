@@ -1,3 +1,4 @@
+import { joinPosting } from '@/api/join-posting';
 import {
   buildSearchDateRange,
   searchPostings,
@@ -22,7 +23,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function PostingsScreen() {
-  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(() => new Date());
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [joinedPostingIds, setJoinedPostingIds] = useState<number[]>([]);
   
@@ -39,6 +40,8 @@ export default function PostingsScreen() {
   const [showJoinConfirmation, setShowJoinConfirmation] = useState(false);
 
   const [joinPostingChat, setJoinPostingChat] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   const [radius, setRadius] = useState(5);
 
@@ -77,6 +80,11 @@ export default function PostingsScreen() {
       });
 
       setSearchResults(results);
+      setJoinedPostingIds(
+        results
+          .filter((posting) => posting.joined)
+          .map((posting) => posting.id)
+      );
       setHasSearched(true);
     } catch (error) {
       setSearchError(
@@ -84,6 +92,41 @@ export default function PostingsScreen() {
       );
     } finally {
       setIsSearching(false);
+    }
+  };
+
+  const handleJoinConfirm = async () => {
+    if (!selectedPosting || isJoining) return;
+
+    setIsJoining(true);
+    setJoinError(null);
+
+    try {
+      const updatedPosting = await joinPosting({
+        postingId: selectedPosting.id,
+        join_chat: joinPostingChat,
+      });
+
+      setSearchResults((currentPostings) =>
+        currentPostings.map((posting) =>
+          posting.id === updatedPosting.id ? updatedPosting : posting
+        )
+      );
+      setSelectedPosting(updatedPosting);
+      setJoinedPostingIds((currentIds) =>
+        currentIds.includes(updatedPosting.id)
+          ? currentIds
+          : [...currentIds, updatedPosting.id]
+      );
+
+      setShowJoinConfirmation(false);
+      setJoinPostingChat(false);
+    } catch (error) {
+      setJoinError(
+        error instanceof Error ? error.message : 'Join failed'
+      );
+    } finally {
+      setIsJoining(false);
     }
   };
 
@@ -318,6 +361,7 @@ export default function PostingsScreen() {
         }}
         onJoinPress={() => {
             setJoinPostingChat(false);
+            setJoinError(null);
             setShowJoinConfirmation(true);
           }}
       />
@@ -349,30 +393,16 @@ export default function PostingsScreen() {
         posting={selectedPosting}
         visible={showJoinConfirmation}
         joinPostingChat={joinPostingChat}
+        isJoining={isJoining}
+        error={joinError}
         onJoinPostingChatChange={setJoinPostingChat}
         onCancel={() => {
+          if (isJoining) return;
           setShowJoinConfirmation(false);
           setJoinPostingChat(false);
+          setJoinError(null);
         }}
-        onConfirm={() => {
-          if (!selectedPosting) return;
-
-          const joinPayload = {
-            postingId: selectedPosting.id,
-            joinPostingChat,
-          };
-
-          console.log('Join posting payload:', joinPayload);
-
-          setJoinedPostingIds((currentIds) =>
-            currentIds.includes(selectedPosting.id)
-              ? currentIds
-              : [...currentIds, selectedPosting.id]
-          );
-
-          setShowJoinConfirmation(false);
-          setJoinPostingChat(false);
-        }}
+        onConfirm={handleJoinConfirm}
       />
 
       <Sidebar />

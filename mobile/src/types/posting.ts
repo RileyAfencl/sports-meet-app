@@ -14,6 +14,7 @@ export type Posting = {
   participantCount?: number;
   maxParticipants: number | null;
   visibility: VisibilityPreference[];
+  joined?: boolean;
   ageRange: {
     min: number;
     max: number;
