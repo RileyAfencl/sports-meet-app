@@ -1,3 +1,4 @@
+import { JoinedBadge } from '@/components/joined-badge';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Posting } from '@/types/posting';
@@ -30,9 +31,16 @@ export function SearchPostingCard({
 
   return (
   <Pressable style={styles.card} onPress={onPress}>
-    <ThemedText style={styles.title} numberOfLines={1}>
-      {posting.title}
-    </ThemedText>
+    <ThemedView style={styles.titleRow}>
+      <ThemedText
+        style={styles.title}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
+        {posting.title}
+      </ThemedText>
+      {posting.joined && <JoinedBadge />}
+    </ThemedView>
 
     <ThemedView style={styles.metaRow}>
       <ThemedText style={styles.metaText} numberOfLines={1}>
@@ -70,7 +78,13 @@ card: {
   paddingHorizontal: 6,
   paddingVertical: 3,
 },
+titleRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 8,
+},
 title: {
+  flex: 1,
   fontSize: 16,
   fontWeight: '700',
   color: '#000',

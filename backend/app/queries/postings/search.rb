@@ -12,6 +12,7 @@ module Postings
       scope = filter_by_age_eligibility(scope)
       scope = filter_by_visibility(scope)
       scope = filter_by_capacity(scope)
+      scope = filter_by_not_creator(scope)
       scope
         .includes(:activity, { creator_profile: :activities }, { participants: :activities })
         .order(:starts_at)
@@ -43,6 +44,12 @@ module Postings
       return scope if current_profile.blank?
 
       scope.where(participant_visibility: visibility_options_for(current_profile.sex))
+    end
+
+    def filter_by_not_creator(scope)
+      return scope if current_profile.blank?
+
+      scope.where.not(creator_profile_id: current_profile.id)
     end
 
     def filter_by_capacity(scope)

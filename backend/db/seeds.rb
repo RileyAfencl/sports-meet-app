@@ -229,7 +229,19 @@ MOCK_POSTINGS = [
     participant_age_min: 25,
     participant_age_max: 35,
     participants: [1, 4]
-  }
+  },
+  {
+    id: 8,
+    title: "test posting eight",
+    activity: "Basketball",
+    creator_profile_id: 6,
+    location_name: "Rothwell Courts",
+    participant_limit: 6,
+    participant_visibility: :anyone,
+    participant_age_min: 21,
+    participant_age_max: 35,
+    participants: [2, 5, 3, 1]
+  },
 ].freeze
 
 MOCK_POSTINGS.each do |attrs|

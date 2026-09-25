@@ -1,4 +1,5 @@
 import { joinPosting } from '@/api/join-posting';
+import { leavePosting } from '@/api/leave-posting';
 import {
   buildSearchDateRange,
   searchPostings,
@@ -42,12 +43,15 @@ export default function PostingsScreen() {
   const [joinPostingChat, setJoinPostingChat] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [isLeaving, setIsLeaving] = useState(false);
+  const [leaveError, setLeaveError] = useState<string | null>(null);
 
   const [radius, setRadius] = useState(5);
 
   const [hasSearched, setHasSearched] = useState(false);
   const [searchResults, setSearchResults] = useState<Posting[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
   const [selectedPosting, setSelectedPosting] = useState<Posting | null>(null);
@@ -95,6 +99,36 @@ export default function PostingsScreen() {
     }
   };
 
+  const handleRefresh = async () => {
+    if (isRefreshing || isSearching || selectedActivities.length === 0) {
+      return;
+    }
+
+    setIsRefreshing(true);
+    setSearchError(null);
+
+    try {
+      const results = await searchPostings({
+        activities: selectedActivities,
+        radius_miles: radius,
+        date_range: buildSearchDateRange(startDate, endDate),
+      });
+
+      setSearchResults(results);
+      setJoinedPostingIds(
+        results
+          .filter((posting) => posting.joined)
+          .map((posting) => posting.id)
+      );
+    } catch (error) {
+      setSearchError(
+        error instanceof Error ? error.message : 'Search failed'
+      );
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const handleJoinConfirm = async () => {
     if (!selectedPosting || isJoining) return;
 
@@ -127,6 +161,35 @@ export default function PostingsScreen() {
       );
     } finally {
       setIsJoining(false);
+    }
+  };
+
+  const handleLeave = async () => {
+    if (!selectedPosting || isLeaving) return;
+
+    setIsLeaving(true);
+    setLeaveError(null);
+
+    try {
+      const updatedPosting = await leavePosting({
+        postingId: selectedPosting.id,
+      });
+
+      setSearchResults((currentPostings) =>
+        currentPostings.map((posting) =>
+          posting.id === updatedPosting.id ? updatedPosting : posting
+        )
+      );
+      setSelectedPosting(updatedPosting);
+      setJoinedPostingIds((currentIds) =>
+        currentIds.filter((id) => id !== updatedPosting.id)
+      );
+    } catch (error) {
+      setLeaveError(
+        error instanceof Error ? error.message : 'Leave failed'
+      );
+    } finally {
+      setIsLeaving(false);
     }
   };
 
@@ -272,7 +335,11 @@ export default function PostingsScreen() {
                 </ThemedText>
 
                 <Pressable
-                  style={styles.clearResultsButton}
+                  style={[
+                    styles.clearResultsButton,
+                    isRefreshing && styles.buttonDisabled,
+                  ]}
+                  disabled={isRefreshing}
                   onPress={() => {
                     setHasSearched(false);
                     setSearchResults([]);
@@ -281,6 +348,22 @@ export default function PostingsScreen() {
                   }}
                 >
                   <ThemedText>Clear Results</ThemedText>
+                </Pressable>
+
+                <Pressable
+                  style={[
+                    styles.refreshResultsButton,
+                    (isRefreshing || selectedActivities.length === 0) &&
+                      styles.buttonDisabled,
+                  ]}
+                  disabled={isRefreshing || selectedActivities.length === 0}
+                  onPress={handleRefresh}
+                >
+                  {isRefreshing ? (
+                    <ActivityIndicator color="#000" />
+                  ) : (
+                    <ThemedText>↻ Refresh</ThemedText>
+                  )}
                 </Pressable>
               </ThemedView>
 
@@ -349,7 +432,13 @@ export default function PostingsScreen() {
       <SearchPostingModal
         posting={selectedPosting}
         isJoined={isSelectedPostingJoined}
-        onClose={() => setSelectedPosting(null)}
+        isLeaving={isLeaving}
+        leaveError={leaveError}
+        onClose={() => {
+          if (isLeaving) return;
+          setSelectedPosting(null);
+          setLeaveError(null);
+        }}
         onCreatorPress={() => {
           if (!selectedPosting?.creator) return;
 
@@ -364,6 +453,7 @@ export default function PostingsScreen() {
             setJoinError(null);
             setShowJoinConfirmation(true);
           }}
+        onLeavePress={handleLeave}
       />
 
       <ViewParticipantsModal
@@ -580,6 +670,16 @@ ageSliderContainer: {
   marginTop: 8,
 },
 clearResultsButton: {
+  flex: 1,
+  borderWidth: 1,
+  borderColor: '#555',
+  borderRadius: 8,
+  paddingVertical: 2,
+  alignItems: 'center',
+  maxWidth: 100,
+  marginTop: 5,
+},
+refreshResultsButton: {
   flex: 1,
   borderWidth: 1,
   borderColor: '#555',

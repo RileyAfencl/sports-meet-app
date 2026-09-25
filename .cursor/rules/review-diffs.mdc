@@ -1,0 +1,37 @@
+---
+description: After implementing a plan, show only exact +/- diffs per file
+alwaysApply: true
+---
+
+# Review diffs
+
+After implementing a plan, show the user the exact added and removed lines for each changed file.
+
+- Group by file. One diff block per file.
+- Include only lines that start with `+` or `-` (the actual code change).
+- Do not include unchanged context lines.
+- Do not summarize, paraphrase, or replace any changed lines with comments (`// ...`, `// leavePosting, then replace...`).
+- Do not write a prose recap of what the diff does.
+- New files: every line prefixed with `+`.
+
+```diff
+# ❌ BAD — context, summaries, or placeholders
+   const [joinError, setJoinError] = useState<string | null>(null);
++  const [isLeaving, setIsLeaving] = useState(false);
+   const [radius, setRadius] = useState(5);
++  // handleLeave: leavePosting, then replace searchResults
+```
+
+```diff
+# ✅ GOOD — only the real +/− lines
++  const [isLeaving, setIsLeaving] = useState(false);
++  const [leaveError, setLeaveError] = useState<string | null>(null);
+-        onClose={() => setSelectedPosting(null)}
++        isLeaving={isLeaving}
++        leaveError={leaveError}
++        onClose={() => {
++          if (isLeaving) return;
++          setSelectedPosting(null);
++          setLeaveError(null);
++        }}
+```

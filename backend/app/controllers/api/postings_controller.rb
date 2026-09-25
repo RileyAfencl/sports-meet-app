@@ -62,6 +62,39 @@ class Api::PostingsController < ApplicationController
     }
   end
 
+  def leave
+    posting = Posting.find(params[:id])
+    participant = posting.posting_participants.find_by(profile: current_profile)
+
+    if participant.blank?
+      return render json: { errors: ["not joined"] }, status: :conflict
+    end
+
+    if current_profile.id == posting.creator_profile_id
+      return render json: { errors: ["creator cannot leave"] }, status: :unprocessable_entity
+    end
+
+    ActiveRecord::Base.transaction do
+      posting.posting_chat
+        &.posting_chat_participants
+        &.find_by(profile: current_profile)
+        &.destroy!
+
+      participant.destroy!
+    end
+
+    serialized_posting = Posting
+      .includes(:activity, { creator_profile: :activities }, { participants: :activities })
+      .find(posting.id)
+
+    render json: {
+      posting: ::PostingSerializer.new(
+        serialized_posting,
+        current_profile: current_profile
+      ).as_json
+    }
+  end
+
   private
 
   def current_profile

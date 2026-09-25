@@ -1,5 +1,6 @@
-import { Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet } from 'react-native';
 
+import { JoinedBadge } from '@/components/joined-badge';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -12,19 +13,25 @@ import { getParticipantCount } from '@/utils/posting-participants';
 type SearchPostingModalProps = {
   posting: Posting | null;
   isJoined: boolean;
+  isLeaving: boolean;
+  leaveError: string | null;
   onClose: () => void;
   onCreatorPress: () => void;
   onViewParticipants: () => void;
   onJoinPress: () => void;
+  onLeavePress: () => void;
 };
 
 export function SearchPostingModal({
   posting,
   isJoined,
+  isLeaving,
+  leaveError,
   onClose,
   onCreatorPress,
   onViewParticipants,
   onJoinPress,
+  onLeavePress,
 }: SearchPostingModalProps) {
   if (!posting) {
     return null;
@@ -76,9 +83,12 @@ export function SearchPostingModal({
               {posting.title}
             </ThemedText>
 
-            <ThemedText style={styles.activity}>
-              {posting.activity}
-            </ThemedText>
+            <ThemedView style={styles.activityRow}>
+              <ThemedText style={styles.activity}>
+                {posting.activity}
+              </ThemedText>
+              {isJoined && <JoinedBadge />}
+            </ThemedView>
 
                 <ThemedView style={styles.creatorRow}>
                   <ThemedText style={styles.creatorLabel}>
@@ -154,15 +164,23 @@ export function SearchPostingModal({
             <Pressable
               style={[
                 styles.joinButton,
-                isJoined && styles.joinButtonDisabled,
+                isJoined && styles.leaveButton,
+                isLeaving && styles.leaveButtonDisabled,
               ]}
-              disabled={isJoined}
-              onPress={onJoinPress}
+              disabled={isLeaving}
+              onPress={isJoined ? onLeavePress : onJoinPress}
             >
-              <ThemedText style={styles.joinButtonText}>
-                {isJoined ? 'Joined' : 'Join Posting'}
-              </ThemedText>
+              {isLeaving ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <ThemedText style={styles.joinButtonText}>
+                  {isJoined ? 'Leave' : 'Join Posting'}
+                </ThemedText>
+              )}
             </Pressable>
+            {leaveError && (
+              <ThemedText style={styles.errorText}>{leaveError}</ThemedText>
+            )}
           </ScrollView>
         </ThemedView>
       </ThemedView>
@@ -214,12 +232,17 @@ title: {
     color: '#000',
     paddingRight: 44,
 },
+activityRow: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: 8,
+  marginTop: 2,
+},
 activity: {
   fontSize: 15,
   fontWeight: '600',
   color: '#000',
   opacity: 0.7,
-  marginTop: 2,
 },
 detailsSection: {
     gap: 6,
@@ -318,7 +341,17 @@ joinButtonText: {
     fontWeight: '800',
     color: '#fff',
 },
-joinButtonDisabled: {
-  opacity: 0.5,
+leaveButton: {
+  backgroundColor: '#dc2626',
+},
+leaveButtonDisabled: {
+  opacity: 0.6,
+},
+errorText: {
+  marginTop: 12,
+  color: '#b00020',
+  fontSize: 13,
+  fontWeight: '600',
+  textAlign: 'center',
 },
 });
